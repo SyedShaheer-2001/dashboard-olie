@@ -1,0 +1,7 @@
+{
+  "/_not-found/page": "app/_not-found/page.js",
+  "/auth/auth1/login/page": "app/auth/auth1/login/page.js",
+  "/(DashboardLayout)/page": "app/(DashboardLayout)/page.js",
+  "/(DashboardLayout)/users/page": "app/(DashboardLayout)/users/page.js",
+  "/(DashboardLayout)/privacy-policies/page": "app/(DashboardLayout)/privacy-policies/page.js"
+}
