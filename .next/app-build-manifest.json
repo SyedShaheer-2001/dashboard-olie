@@ -22,25 +22,35 @@
       "static/chunks/main-app.js",
       "static/chunks/app/(DashboardLayout)/loading.js"
     ],
+    "/(DashboardLayout)/privacy-policies/page": [
+      "static/chunks/webpack.js",
+      "static/chunks/main-app.js",
+      "static/chunks/app/(DashboardLayout)/privacy-policies/page.js"
+    ],
     "/(DashboardLayout)/page": [
       "static/chunks/webpack.js",
       "static/chunks/main-app.js",
       "static/chunks/app/(DashboardLayout)/page.js"
     ],
-    "/auth/auth1/login/page": [
+    "/(DashboardLayout)/faq/page": [
       "static/chunks/webpack.js",
       "static/chunks/main-app.js",
-      "static/chunks/app/auth/auth1/login/page.js"
+      "static/chunks/app/(DashboardLayout)/faq/page.js"
+    ],
+    "/(DashboardLayout)/terms-conditions/page": [
+      "static/chunks/webpack.js",
+      "static/chunks/main-app.js",
+      "static/chunks/app/(DashboardLayout)/terms-conditions/page.js"
     ],
     "/(DashboardLayout)/users/page": [
       "static/chunks/webpack.js",
       "static/chunks/main-app.js",
       "static/chunks/app/(DashboardLayout)/users/page.js"
     ],
-    "/(DashboardLayout)/privacy-policies/page": [
+    "/auth/auth1/login/page": [
       "static/chunks/webpack.js",
       "static/chunks/main-app.js",
-      "static/chunks/app/(DashboardLayout)/privacy-policies/page.js"
+      "static/chunks/app/auth/auth1/login/page.js"
     ],
     "/_not-found/page": [
       "static/chunks/webpack.js",

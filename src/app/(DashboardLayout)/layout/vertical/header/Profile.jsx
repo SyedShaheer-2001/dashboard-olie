@@ -42,7 +42,9 @@ console.log("user", user)
   const [uploading, setUploading] = useState(false);
   const [image, setImage]= useState()
 
-  const token = user?.data?.adminToken;
+  const token = user?.data?.adminToken; 
+  const myImage = typeof window !== 'undefined' ? localStorage.getItem('myImage') : null;
+  console.log('myImage', myImage)
 
   
   
@@ -77,6 +79,7 @@ console.log("user", user)
       );
       console.log('Upload success:', res.data);
       setImage(res.data.data.image)
+      localStorage.setItem('myImage', res.data.data.image);
       handleDialogClose();
       // Optionally refresh user info or image
     } catch (err) {
@@ -103,7 +106,7 @@ console.log("user", user)
         onClick={handleClick2}
       >
         <Avatar
-          src= {image || "/images/profile/user-1.jpg"}
+          src= {myImage}
           alt={'ProfileImg'}
           sx={{
             width: 35,
@@ -131,7 +134,7 @@ console.log("user", user)
       >
         <Typography variant="h5">User Profile</Typography>
         <Stack direction="row" py={3} spacing={2} alignItems="center">
-        <Avatar src={image || "/images/profile/user-1.jpg"} alt={"ProfileImg"} sx={{ width: 95, height: 95 }} />
+        <Avatar src={ myImage } alt={"ProfileImg"} sx={{ width: 95, height: 95 }} />
           <Box>
             <Typography variant="subtitle2" color="textPrimary" fontWeight={600}>
               {user?.data?.name || "Joe Wilson"} 

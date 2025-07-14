@@ -36,6 +36,18 @@ const Menuitems = [
     icon: IconAperture,
     href: '/privacy-policies',
   },
+  {
+    id: uniqueId(),
+    title: 'Terms and Conditions',
+    icon: IconAperture,
+    href: '/terms-conditions',
+  },
+  {
+    id: uniqueId(),
+    title: 'FAQ',
+    icon: IconAperture,
+    href: '/faq',
+  },
   // {
   //   id: uniqueId(),
   //   title: 'Sample ',
