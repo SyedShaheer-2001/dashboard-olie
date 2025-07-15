@@ -1,15 +1,9 @@
 {
   "pages": {
-    "/layout": [
+    "/(DashboardLayout)/page": [
       "static/chunks/webpack.js",
       "static/chunks/main-app.js",
-      "static/css/app/layout.css",
-      "static/chunks/app/layout.js"
-    ],
-    "/loading": [
-      "static/chunks/webpack.js",
-      "static/chunks/main-app.js",
-      "static/chunks/app/loading.js"
+      "static/chunks/app/(DashboardLayout)/page.js"
     ],
     "/(DashboardLayout)/layout": [
       "static/chunks/webpack.js",
@@ -22,40 +16,51 @@
       "static/chunks/main-app.js",
       "static/chunks/app/(DashboardLayout)/loading.js"
     ],
-    "/(DashboardLayout)/privacy-policies/page": [
+    "/layout": [
       "static/chunks/webpack.js",
       "static/chunks/main-app.js",
-      "static/chunks/app/(DashboardLayout)/privacy-policies/page.js"
+      "static/css/app/layout.css",
+      "static/chunks/app/layout.js"
     ],
-    "/(DashboardLayout)/page": [
+    "/loading": [
       "static/chunks/webpack.js",
       "static/chunks/main-app.js",
-      "static/chunks/app/(DashboardLayout)/page.js"
+      "static/chunks/app/loading.js"
     ],
     "/(DashboardLayout)/faq/page": [
       "static/chunks/webpack.js",
       "static/chunks/main-app.js",
       "static/chunks/app/(DashboardLayout)/faq/page.js"
     ],
-    "/(DashboardLayout)/terms-conditions/page": [
+    "/(DashboardLayout)/interests/page": [
       "static/chunks/webpack.js",
       "static/chunks/main-app.js",
-      "static/chunks/app/(DashboardLayout)/terms-conditions/page.js"
-    ],
-    "/(DashboardLayout)/users/page": [
-      "static/chunks/webpack.js",
-      "static/chunks/main-app.js",
-      "static/chunks/app/(DashboardLayout)/users/page.js"
+      "static/chunks/app/(DashboardLayout)/interests/page.js"
     ],
     "/auth/auth1/login/page": [
       "static/chunks/webpack.js",
       "static/chunks/main-app.js",
       "static/chunks/app/auth/auth1/login/page.js"
     ],
-    "/_not-found/page": [
+    "/(DashboardLayout)/posts/page": [
       "static/chunks/webpack.js",
       "static/chunks/main-app.js",
-      "static/chunks/app/_not-found/page.js"
+      "static/chunks/app/(DashboardLayout)/posts/page.js"
+    ],
+    "/(DashboardLayout)/users/page": [
+      "static/chunks/webpack.js",
+      "static/chunks/main-app.js",
+      "static/chunks/app/(DashboardLayout)/users/page.js"
+    ],
+    "/(DashboardLayout)/privacy-policies/page": [
+      "static/chunks/webpack.js",
+      "static/chunks/main-app.js",
+      "static/chunks/app/(DashboardLayout)/privacy-policies/page.js"
+    ],
+    "/(DashboardLayout)/terms-conditions/page": [
+      "static/chunks/webpack.js",
+      "static/chunks/main-app.js",
+      "static/chunks/app/(DashboardLayout)/terms-conditions/page.js"
     ]
   }
 }

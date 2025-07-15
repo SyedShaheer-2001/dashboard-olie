@@ -48,6 +48,18 @@ const Menuitems = [
     icon: IconAperture,
     href: '/faq',
   },
+  {
+    id: uniqueId(),
+    title: 'Interests',
+    icon: IconAperture,
+    href: '/interests',
+  },
+  {
+    id: uniqueId(),
+    title: 'Posts',
+    icon: IconAperture,
+    href: '/posts',
+  },
   // {
   //   id: uniqueId(),
   //   title: 'Sample ',

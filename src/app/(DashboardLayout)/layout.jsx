@@ -8,8 +8,8 @@ import Sidebar from "./layout/vertical/sidebar/Sidebar";
 import Customizer from "./layout/shared/customizer/Customizer";
 import Navigation from "./layout/horizontal/navbar/Navigation";
 import HorizontalHeader from "./layout/horizontal/header/Header";
-import { CustomizerContext } from "@/app/context/customizerContext";
-import config from "@/app/context/config";
+import { CustomizerContext } from "../../app/context/customizerContext";
+import config from "../../app/context/config";
 
 const MainWrapper = styled("div")(() => ({
   display: "flex",

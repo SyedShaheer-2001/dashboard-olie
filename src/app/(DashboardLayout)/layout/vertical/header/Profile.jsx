@@ -88,7 +88,6 @@ console.log("user", user)
       setUploading(false);
     }
   };
-  console.log('image coming' ,image)
 
   return (
     <Box>

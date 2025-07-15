@@ -10,7 +10,7 @@ const FAQ = () => {
   const [question, setQuestion] = useState("");
   const [options, setOptions] = useState([{ text: "", isCorrect: false }]);
   const [message, setMessage] = useState("");
-  const [editId, setEditId] = useState(null); // <-- For editing
+  const [editId, setEditId] = useState(null);
 
   const user = typeof window !== 'undefined' ? JSON.parse(sessionStorage.getItem('user')) : null;
   const token = user?.data?.adminToken;
@@ -59,14 +59,12 @@ const FAQ = () => {
     setQuestion("");
     setOptions([{ text: "", isCorrect: false }]);
     setEditId(null);
-    setShowForm(false);
   };
 
   const handleCreateOrUpdate = async (e) => {
     e.preventDefault();
     try {
       if (editId) {
-        // Update
         await axios.put(`${BASE_URL}/admin/content/updateFaqs/${editId}`, {
           question,
           options,
@@ -76,9 +74,8 @@ const FAQ = () => {
             'Content-Type': 'application/json',
           },
         });
-        setMessage("? Question updated successfully!");
+        setMessage("✅ Question updated successfully!");
       } else {
-        // Create
         await axios.post(`${BASE_URL}/admin/content/createFaqs`, {
           question,
           options,
@@ -88,13 +85,14 @@ const FAQ = () => {
             'Content-Type': 'application/json',
           },
         });
-        setMessage("? Question created successfully!");
+        setMessage("✅ Question created successfully!");
       }
       resetForm();
+      setShowForm(false); // Close modal
       fetchFaqs();
     } catch (error) {
       console.error("Error saving question:", error);
-      setMessage("? An error occurred.");
+      setMessage("❌ An error occurred.");
     }
   };
 
@@ -111,16 +109,16 @@ const FAQ = () => {
       await axios.delete(`${BASE_URL}/admin/content/deleteFaqs/${id}`, {
         headers: { 'x-access-token': token },
       });
-      setMessage("??? Question deleted.");
+      setMessage("Question deleted.");
       fetchFaqs();
     } catch (error) {
       console.error("Failed to delete:", error);
-      setMessage("? Delete failed.");
+      setMessage("❌ Delete failed.");
     }
   };
 
   return (
-    <div style={{ padding: 20, maxWidth: 800, margin: "auto" }}>
+    <div style={{ padding: 20, maxWidth: 800,  }}>
       <h2>FAQ</h2>
 
       {loading ? (
@@ -133,80 +131,200 @@ const FAQ = () => {
               <ul>
                 {faq.Option.map((opt) => (
                   <li key={opt.id}>
-                    {opt.text} {opt.isCorrect && <strong>(? Correct)</strong>}
+                    {opt.text} {opt.isCorrect && <strong>(✔ Correct)</strong>}
                   </li>
                 ))}
               </ul>
-              <button onClick={() => handleEdit(faq)}>?? Edit</button>
-              <button onClick={() => handleDelete(faq.id)} style={{ marginLeft: 10, color: "red" }}>
-                ??? Delete
+              <button onClick={() => handleEdit(faq)}
+                style={{
+                  backgroundColor: 'black',
+                  color: 'white',
+                  padding: '8px 16px',
+                  border: 'none',
+                  borderRadius: '4px',
+                  cursor: 'pointer'
+                }}
+                onMouseOver={(e) => {
+                  e.target.style.backgroundColor = '#424242';
+                }}
+                onMouseOut={(e) => {
+                  e.target.style.backgroundColor = 'black';
+                }}
+              > Edit</button>
+              <button onClick={() => handleDelete(faq.id)} style={{
+                marginLeft: 10,
+                backgroundColor: 'red',
+                color: 'white',
+                padding: '8px 16px',
+                border: 'none',
+                borderRadius: '4px',
+                cursor: 'pointer'
+              }}
+                onMouseOver={(e) => {
+                  e.target.style.backgroundColor = '#d91717';
+                }}
+                onMouseOut={(e) => {
+                  e.target.style.backgroundColor = 'red';
+                }}>
+                Delete
               </button>
             </div>
           ))}
         </div>
       )}
 
-      <button onClick={() => {
-        setShowForm(!showForm);
-        resetForm();
-      }} style={{ marginTop: 20 }}>
-        {showForm ? "Cancel" : "? Add Question"}
+      <button
+        onClick={() => {
+          resetForm();
+          setShowForm(true);
+        }}
+        style={{
+          marginTop: 10,
+          backgroundColor: '#027951',
+          color: 'white',
+          padding: '8px 16px',
+          border: 'none',
+          borderRadius: '4px',
+          cursor: 'pointer',
+        }}
+        onMouseOver={(e) => {
+                  e.target.style.backgroundColor = '#0e6d0eff';
+                }}
+                onMouseOut={(e) => {
+                  e.target.style.backgroundColor =  '#027951';
+                }}
+      >
+        Add Question
       </button>
 
       {showForm && (
-        <form onSubmit={handleCreateOrUpdate} style={{ marginTop: 20 }}>
-          <div>
-            <label>Question:</label><br />
-            <input
-              type="text"
-              value={question}
-              onChange={(e) => setQuestion(e.target.value)}
-              required
-              style={{ width: "100%", padding: 8, marginBottom: 10 }}
-            />
-          </div>
+        <div className="modal-backdrop">
+          <div className="modal">
+            <form onSubmit={handleCreateOrUpdate}>
+              <h3>{editId ? "Update Question" : "Add Question"}</h3>
 
-          <h4>Options:</h4>
-          {options.map((option, index) => (
-            <div key={index} style={{ marginBottom: 10 }}>
-              <input
-                type="text"
-                placeholder={`Option ${index + 1}`}
-                value={option.text}
-                onChange={(e) =>
-                  handleOptionChange(index, "text", e.target.value)
-                }
-                required
-                style={{ width: "60%", marginRight: 10 }}
-              />
-              <label>
+              <div>
+                <label className="mb-16">Question:</label><br />
                 <input
-                  type="checkbox"
-                  checked={option.isCorrect}
-                  onChange={() =>
-                    handleOptionChange(index, "isCorrect", !option.isCorrect)
-                  }
-                />{" "}
-                Correct
-              </label>
-              {options.length > 1 && (
-                <button type="button" onClick={() => removeOption(index)}>
-                  ?
-                </button>
-              )}
-            </div>
-          ))}
+                  type="text"
+                  value={question}
+                  onChange={(e) => setQuestion(e.target.value)}
+                  required
+                  style={{ width: "100%", padding: 8, marginBottom: 10 , borderRadius: 4, border: '#c5bdbdff', boxShadow: '0 2px 4px rgba(0, 0, 0, 0.4)' , backgroundColor: '#f9f9f9', outline: "none", padding: 12 }}
+                />
+              </div>
 
-          <button type="button" onClick={addOption}>
-            ? Add Option
-          </button>
+              <h4>Options:</h4>
+              {options.map((option, index) => (
+                <div key={index} style={{ marginBottom: 10 }}>
+                  <input
+                    type="text"
+                    placeholder={`Option ${index + 1}`}
+                    value={option.text}
+                    onChange={(e) =>
+                      handleOptionChange(index, "text", e.target.value)
+                    }
+                    required
+                    style={{ width: "60%", marginRight: 10 , borderRadius: 4, border: '#c5bdbdff', boxShadow: '0 2px 4px rgba(0, 0, 0, 0.4)' , backgroundColor: '#f9f9f9', outline: "none", padding: 10 }}
+                  />
+                  <label>
+                    <input
+                      type="checkbox"
+                      checked={option.isCorrect}
+                      onChange={() =>
+                        handleOptionChange(index, "isCorrect", !option.isCorrect)
+                      }
+                    />{" "}
+                    Correct
+                  </label>
+                  {options.length > 1 && (
+                    <button type="button" onClick={() => removeOption(index)}>
+                      ❌
+                    </button>
+                  )}
+                </div>
+              ))}
 
-          <br /><br />
-          <button type="submit">{editId ? "? Update Question" : "? Create Question"}</button>
-        </form>
+              <button type="button" onClick={addOption}
+              style={{
+                backgroundColor: '#44d7f1ff',
+                color: 'white',
+                padding: '8px 16px',
+                border: 'none',
+                borderRadius: '4px',
+                cursor: 'pointer',
+              }}>
+                Add Option
+              </button>
+
+              <br /><br />
+              <button type="submit"
+                style={{
+                  marginRight: 10,
+                  backgroundColor: editId ? '#268fe6' : 'green',
+                  color: 'white',
+                  padding: '8px 16px',
+                  border: 'none',
+                  borderRadius: '4px',
+                  cursor: 'pointer',
+                  boxShadow: '0 2px 4px rgba(0, 0, 0, 0.3)',
+                  transition: 'background-color 0.2s ease',
+                }}
+                onMouseOver={(e) => {
+                  e.target.style.backgroundColor = editId ? '#0981b9ff' : '#006400';
+                }}
+                onMouseOut={(e) => {
+                  e.target.style.backgroundColor = editId ? '#268fe6' : 'green';
+                }}
+              >{editId ? " Update" : " Create"}</button>
+              <button type="button" onClick={() => setShowForm(false)} style={{
+                marginLeft: 10,
+                backgroundColor: 'red',
+                color: 'white',
+                padding: '8px 16px',
+                border: 'none',
+                borderRadius: '4px',
+                cursor: 'pointer'
+              }}
+                onMouseOver={(e) => {
+                  e.target.style.backgroundColor = '#d91717';
+                }}
+                onMouseOut={(e) => {
+                  e.target.style.backgroundColor = 'red';
+                }}>
+                Cancel
+              </button>
+            </form>
+          </div>
+        </div>
       )}
 
-      {message && <p style={{ marginTop: 20 }}>{message}</p>}
+      {/* {message && <p style={{ marginTop: 20 }}>{message}</p>} */}
+
+      {/* Modal Styles */}
+      <style jsx>{`
+        .modal-backdrop {
+          position: fixed;
+          top: 0;
+          left: 0;
+          right: 0;
+          bottom: 0;
+          background: rgba(0,0,0,0.5);
+          display: flex;
+          justify-content: center;
+          align-items: center;
+          z-index: 999;
+        }
+
+        .modal {
+          background: white;
+          padding: 30px;
+          border-radius: 8px;
+          max-width: 600px;
+          width: 100%;
+          box-shadow: 0 0 10px rgba(0,0,0,0.3);
+        }
+      `}</style>
     </div>
   );
 };
