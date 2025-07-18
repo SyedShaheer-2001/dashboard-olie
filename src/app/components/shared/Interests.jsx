@@ -2,6 +2,14 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import BASE_URL from '@/utils/api';
+import {
+  Table, TableBody, TableCell, TableContainer, TableHead, TableRow,
+  TablePagination, Paper, IconButton
+} from '@mui/material';
+import EditIcon from '@mui/icons-material/Edit';
+import DeleteIcon from '@mui/icons-material/Delete';
+import SearchIcon from '@mui/icons-material/Search';
+
 
 
 const Interest = () => {
@@ -10,6 +18,25 @@ const Interest = () => {
   const [editInterest, setEditInterest] = useState('');
   const [editId, setEditId] = useState(null);
   const [showModal, setShowModal] = useState(false);
+  const [showAddModal, setShowAddModal] = useState(false);
+  const [seacrhTerm, setSearchTerm] = useState('');
+  const [page, setPage] = useState(0);
+const [rowsPerPage, setRowsPerPage] = useState(5);
+
+const handleChangePage = (event, newPage) => {
+  setPage(newPage);
+};
+
+const handleChangeRowsPerPage = (event) => {
+  setRowsPerPage(parseInt(event.target.value, 10));
+  setPage(0); // reset to first page
+};
+
+
+  const filteredInterests = interests.filter((user) =>
+    user.name.toLowerCase().includes(seacrhTerm.toLowerCase())
+  );
+  console.log(interests , filteredInterests,'seacrhg tearms' )
 
   const user = typeof window !== 'undefined' ? JSON.parse(sessionStorage.getItem('user')) : null;
   const token = user?.data?.adminToken;
@@ -40,6 +67,7 @@ const Interest = () => {
         headers: { 'x-access-token': token },
       });
       setNewInterest('');
+      setShowAddModal(false);
       fetchInterests();
     } catch (err) {
       console.error("Create error:", err);
@@ -64,6 +92,10 @@ const Interest = () => {
     setShowModal(true);
   };
 
+   const openAddModal = () => {
+    setShowAddModal(true);
+  };
+
   const updateInterest = async () => {
     if (!editInterest.trim() || !editId) return;
     try {
@@ -82,80 +114,87 @@ const Interest = () => {
   };
 
   return (
-    <div style={{ padding: 20, maxWidth: 600 }}>
-      <h2 >User Interests</h2>
+    <div style={{ padding: 20, maxWidth: 700 , margin: 'auto' }}>
+      <h1 >User Interests</h1>
+       {/* Search + Add Button */}
+  <div style={{ display: 'flex', marginBottom: 20 }}>
+    <div style={{ position: 'relative', flex: 1, marginRight: 10 }}>
+      <input
+        type="text"
+        placeholder="Search for interest"
+        value={seacrhTerm}
+        onChange={(e) => setSearchTerm(e.target.value)}
+        style={{
+          width: '100%',
+          padding: '16px 40px 16px 16px',
+          borderRadius: 4,
+          border: '1px solid #c5bdbdff',
+          boxShadow: '0 2px 4px rgba(0, 0, 0, 0.4)',
+          backgroundColor: '#f9f9f9',
+          outline: 'none',
+          fontSize: '16px',
+        }}
+      />
+      <SearchIcon
+        style={{
+          position: 'absolute',
+          right: 12,
+          top: '50%',
+          transform: 'translateY(-50%)',
+          color: 'gray',
+        }}
+      />
+    </div>
+    <button onClick={openAddModal} className="addBtn">
+      Add a new Interest
+    </button>
+  </div>
 
-      <div style={{ display: 'flex', marginBottom: 20 }}>
-        <input
-          type="text"
-          placeholder="Add new interest"
-          value={newInterest}
-          onChange={(e) => setNewInterest(e.target.value)}
-          style={{ flex: 1, padding: 12,  marginRight: 10, borderRadius: 4, border: '#c5bdbdff', boxShadow: '0 2px 4px rgba(0, 0, 0, 0.4)' , backgroundColor: '#f9f9f9', outline: "none" }}
-        />
-        <button
-          onClick={createInterest}
-          style={{
-            padding: '8px 16px',
-            backgroundColor: 'green',
-            color: 'white',
-            border: 'none',
-            borderRadius: 4,
-            cursor: 'pointer',
-          }}
-        >
-          Add
-        </button>
-      </div>
-
-      {interests.map((item) => (
-        <div
-          key={item.id}
-          style={{
-            padding: 10,
-            marginBottom: 10,
-            border: '1px solid #ddd',
-            borderRadius: 4,
-            display: 'flex',
-            justifyContent: 'space-between',
-            alignItems: 'center',
-            border: '#c5bdbdff', 
-            boxShadow: '0 2px 4px rgba(0, 0, 0, 0.4)' , 
-            backgroundColor: '#f9f9f9', outline: "none"
-          }}
-        >
-          <span>{item.name}</span>
-          <div>
-            <button
-              onClick={() => openEditModal(item)}
-              style={{
-                padding: '6px 12px',
-                backgroundColor: '#007bff',
-                color: 'white',
-                border: 'none',
-                borderRadius: 4,
-                marginRight: 10,
-                cursor: 'pointer',
-              }}
-            >
-              Edit
-            </button>
-            <button
-              onClick={() => deleteInterest(item.id)}
-              style={{
-                padding: '6px 12px',
-                backgroundColor: '#dc3545',
-                color: 'white',
-                border: 'none',
-                borderRadius: 4,
-                cursor: 'pointer',
-              }}
-            >
-              Delete
-            </button>
-          </div>
-        </div>
-      ))}
+  {/* Table */}
+  <TableContainer
+    component={Paper}
+    sx={{
+      boxShadow: '0 2px 4px rgba(0,0,0,0.7)',
+      backgroundColor: '#f9f9f9',
+    }}
+  >
+    <Table>
+      <TableHead>
+        <TableRow>
+          <TableCell><strong>S.no</strong></TableCell>
+          <TableCell><strong>Name</strong></TableCell>
+          <TableCell align="right"><strong>Actions</strong></TableCell>
+        </TableRow>
+      </TableHead>
+      <TableBody>
+        {filteredInterests
+          .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
+          .map((item,index) => (
+            <TableRow key={item.id}>
+              <TableCell>{index+1}</TableCell>
+              <TableCell>{item.name}</TableCell>
+              <TableCell align="right">
+                <IconButton onClick={() => openEditModal(item)} color="secondary">
+                  <EditIcon />
+                </IconButton>
+                <IconButton onClick={() => deleteInterest(item.id)} color="error">
+                  <DeleteIcon />
+                </IconButton>
+              </TableCell>
+            </TableRow>
+          ))}
+      </TableBody>
+    </Table>
+    <TablePagination
+      component="div"
+      count={filteredInterests.length}
+      page={page}
+      onPageChange={handleChangePage}
+      rowsPerPage={rowsPerPage}
+      onRowsPerPageChange={handleChangeRowsPerPage}
+      rowsPerPageOptions={[5, 10, 15, 20, 50, 100]}
+    />
+  </TableContainer>
 
       {/* Edit Modal */}
       {showModal && (
@@ -196,6 +235,54 @@ const Interest = () => {
               </button>
               <button
                 onClick={updateInterest}
+                className='updateBtn'
+              >
+                Save
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Add Modal */}
+      {showAddModal && (
+        <div style={{
+          position: 'fixed', top: 0, left: 0, width: '100%',
+          height: '100%', backgroundColor: 'rgba(0,0,0,0.5)',
+          display: 'flex', alignItems: 'center', justifyContent: 'center',
+        }}>
+          <div style={{
+            backgroundColor: '#fff', padding: 20, borderRadius: 8, minWidth: 300,
+            boxShadow: '0 4px 10px rgba(0,0,0,0.2)',
+          }}>
+            <h3>Add New Interest</h3>
+            <input
+              type="text"
+              value={newInterest}
+              onChange={(e) => setNewInterest(e.target.value)}
+              style={{
+                width: '100%',
+                padding: 8,
+                marginBottom: 10,borderRadius: 4, border: '#c5bdbdff', boxShadow: '0 2px 4px rgba(0, 0, 0, 0.4)' , backgroundColor: '#f9f9f9', outline: "none"
+              }}
+            />
+            <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
+              <button
+                onClick={() => setShowAddModal(false)}
+                style={{
+                  backgroundColor: '#6c757d',
+                  color: 'white',
+                  border: 'none',
+                  padding: '8px 12px',
+                  borderRadius: 4,
+                  marginRight: 10,
+                  cursor: 'pointer',
+                }}
+              >
+                Cancel
+              </button>
+              <button
+                onClick={createInterest}
                 style={{
                   backgroundColor: '#28a745',
                   color: 'white',
@@ -205,7 +292,7 @@ const Interest = () => {
                   cursor: 'pointer',
                 }}
               >
-                Save
+                Add
               </button>
             </div>
           </div>

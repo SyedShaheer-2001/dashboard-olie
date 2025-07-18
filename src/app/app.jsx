@@ -7,6 +7,9 @@ import { ThemeSettings } from "@/utils/theme/Theme";
 import { CustomizerContext } from '@/app/context/customizerContext';
 import { AppRouterCacheProvider } from '@mui/material-nextjs/v14-appRouter';
 import "@/utils/i18n";
+import "../app/global.css";
+import 'react-quill/dist/quill.snow.css';
+
 
 
 const MyApp = ({ children }) => {

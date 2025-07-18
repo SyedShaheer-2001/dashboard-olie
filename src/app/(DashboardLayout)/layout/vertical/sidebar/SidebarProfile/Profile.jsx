@@ -15,6 +15,7 @@ export const Profile = () => {
   const lgUp = useMediaQuery((theme) => theme.breakpoints.up('lg'));
   const hideMenu = lgUp ? isCollapse == 'mini-sidebar' && !isSidebarHover : '';
   const user = JSON.parse(sessionStorage.getItem('user'));
+   const myImage = typeof window !== 'undefined' ? localStorage.getItem('myImage') : null;
 
 
   return (
@@ -26,7 +27,7 @@ export const Profile = () => {
     >
       {!hideMenu ? (
         <>
-          <Avatar alt="Remy Sharp" src={"/images/profile/user-1.jpg"} sx={{ height: 40, width: 40 }} />
+          <Avatar alt="Remy Sharp" src={myImage} sx={{ height: 40, width: 40 }} />
 
           <Box>
             <Typography variant="h6">{user?.data?.name || "Joe Wilson"} </Typography>

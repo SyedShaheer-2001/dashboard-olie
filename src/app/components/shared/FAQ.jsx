@@ -118,16 +118,29 @@ const FAQ = () => {
   };
 
   return (
-    <div style={{ padding: 20, maxWidth: 800,  }}>
-      <h2>FAQ</h2>
+    <div style={{ padding: 20, maxWidth: 900, margin: 'auto' }}>
+      <div style={{display: 'flex', justifyContent: 'space-between', alignItems: 'center'}}>
+        <h1>FAQ</h1>
+      <button
+        onClick={() => {
+          resetForm();
+          setShowForm(true);
+        }}
+        className="addBtn"
+      >
+        Add Question
+      </button>
+      </div>
+      
 
       {loading ? (
         <p>Loading FAQs...</p>
       ) : (
         <div>
           {faqs.map((faq) => (
-            <div key={faq.id} style={{ marginBottom: 20, borderBottom: "1px solid #ccc", paddingBottom: 10 }}>
-              <strong>Q:</strong> {faq.question}
+            <div key={faq.id} className="primaryColor" style={{ position: 'relative', marginBottom: 20, maxWidth: '900px', padding: 20, boxShadow: '0 2px 4px rgba(0,0,0,0.7)', borderRadius: 8, paddingBottom: 10 }}>
+             <div style={{fontSize:'18px'}}> <strong>Q:</strong> {faq.question} </div>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
               <ul>
                 {faq.Option.map((opt) => (
                   <li key={opt.id}>
@@ -135,67 +148,25 @@ const FAQ = () => {
                   </li>
                 ))}
               </ul>
-              <button onClick={() => handleEdit(faq)}
-                style={{
-                  backgroundColor: 'black',
-                  color: 'white',
-                  padding: '8px 16px',
-                  border: 'none',
-                  borderRadius: '4px',
-                  cursor: 'pointer'
-                }}
-                onMouseOver={(e) => {
-                  e.target.style.backgroundColor = '#424242';
-                }}
-                onMouseOut={(e) => {
-                  e.target.style.backgroundColor = 'black';
-                }}
+              <div style={{ position: 'absolute', bottom: 10, right: 10, display: 'flex', gap: 10 }}>
+                <button onClick={() => handleEdit(faq)}
+                className="updateBtn"
               > Edit</button>
-              <button onClick={() => handleDelete(faq.id)} style={{
-                marginLeft: 10,
-                backgroundColor: 'red',
-                color: 'white',
-                padding: '8px 16px',
-                border: 'none',
-                borderRadius: '4px',
-                cursor: 'pointer'
-              }}
-                onMouseOver={(e) => {
-                  e.target.style.backgroundColor = '#d91717';
-                }}
-                onMouseOut={(e) => {
-                  e.target.style.backgroundColor = 'red';
-                }}>
+              <button onClick={() => handleDelete(faq.id)}
+                className="deleteBtn">
                 Delete
               </button>
+
+              </div>
+              
+                
+              </div>
             </div>
           ))}
         </div>
       )}
 
-      <button
-        onClick={() => {
-          resetForm();
-          setShowForm(true);
-        }}
-        style={{
-          marginTop: 10,
-          backgroundColor: '#027951',
-          color: 'white',
-          padding: '8px 16px',
-          border: 'none',
-          borderRadius: '4px',
-          cursor: 'pointer',
-        }}
-        onMouseOver={(e) => {
-                  e.target.style.backgroundColor = '#0e6d0eff';
-                }}
-                onMouseOut={(e) => {
-                  e.target.style.backgroundColor =  '#027951';
-                }}
-      >
-        Add Question
-      </button>
+      
 
       {showForm && (
         <div className="modal-backdrop">
@@ -238,8 +209,8 @@ const FAQ = () => {
                     Correct
                   </label>
                   {options.length > 1 && (
-                    <button type="button" onClick={() => removeOption(index)}>
-                      ❌
+                    <button type="button" style={{marginLeft:5}} onClick={() => removeOption(index)}>
+                      x  
                     </button>
                   )}
                 </div>

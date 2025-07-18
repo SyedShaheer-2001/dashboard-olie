@@ -21,8 +21,6 @@ const Menuitems = [
     title: 'Dashboard',
     icon: IconAperture,
     href: '/',
-    chip: 'New',
-    chipColor: 'secondary',
   },
   {
     id: uniqueId(),
@@ -60,6 +58,24 @@ const Menuitems = [
     icon: IconAperture,
     href: '/posts',
   },
+  {
+    id: uniqueId(),
+    title: 'Categories',
+    icon: IconAperture,
+    href: '/categories',
+  },
+   {
+    id: uniqueId(),
+    title: 'Events',
+    icon: IconAperture,
+    href: '/events',
+  },
+    {
+    id: uniqueId(),
+    title: 'Credits',
+    icon: IconAperture,
+    href: '/credits',
+  }
   // {
   //   id: uniqueId(),
   //   title: 'Sample ',

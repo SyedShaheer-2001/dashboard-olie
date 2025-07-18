@@ -32,10 +32,12 @@ const Logo = () => {
           />
         ) : (
           <Image
-            src={"/images/logos/dark-logo.svg"}
+            src={"/images/logos/Ollie-logo.png"}
             alt="logo"
-            height={TopbarHeight}
-            width={174}
+           // height={TopbarHeight}
+           height={60}
+            width={60}
+           // width={174}
             priority
           />
         )}

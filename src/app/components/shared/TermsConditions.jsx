@@ -12,71 +12,23 @@ import {
 } from '@mui/material';
 import axios from 'axios';
 import BASE_URL from '@/utils/api';
-import { EditorContent, useEditor } from '@tiptap/react';
-import StarterKit from '@tiptap/starter-kit';
-import { Editor } from '@tiptap/react';
+import dynamic from 'next/dynamic';
 
-
-// TipTap Menu Bar
-const MenuBar = ({ editor }) => {
-  if (!editor) return null;
-
-  return (
-    <Box mb={2} display="flex" flexWrap="wrap" gap={1}>
-      <Button onClick={() => editor.chain().focus().toggleBold().run()} variant={editor.isActive('bold') ? 'contained' : 'outlined'} size="small">
-        Bold
-      </Button>
-      <Button onClick={() => editor.chain().focus().toggleItalic().run()} variant={editor.isActive('italic') ? 'contained' : 'outlined'} size="small">
-        Italic
-      </Button>
-      <Button onClick={() => editor.chain().focus().toggleUnderline().run()} variant={editor.isActive('underline') ? 'contained' : 'outlined'} size="small">
-        Underline
-      </Button>
-      <Button onClick={() => editor.chain().focus().toggleHeading({ level: 2 }).run()} variant={editor.isActive('heading', { level: 2 }) ? 'contained' : 'outlined'} size="small">
-        H2
-      </Button>
-      <Button onClick={() => editor.chain().focus().toggleHeading({ level: 3 }).run()} variant={editor.isActive('heading', { level: 3 }) ? 'contained' : 'outlined'} size="small">
-        H3
-      </Button>
-      <Button onClick={() => editor.chain().focus().setParagraph().run()} variant={editor.isActive('paragraph') ? 'contained' : 'outlined'} size="small">
-        Paragraph
-      </Button>
-    </Box>
-  );
-};
+const ReactQuill = dynamic(() => import('react-quill'), { ssr: false });
+import 'react-quill/dist/quill.snow.css';
 
 const TermsConditions = () => {
   const [privacyData, setPrivacyData] = useState(null);
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(true);
   const [editing, setEditing] = useState(false);
   const [submitting, setSubmitting] = useState(false);
   const [feedback, setFeedback] = useState({ message: '', success: true, open: false });
+  const [content, setContent] = useState('');
 
   const user = typeof window !== 'undefined' ? JSON.parse(sessionStorage.getItem('user')) : null;
   const token = user?.data?.adminToken;
 
-  // TipTap Editor
-  const [editor, setEditor] = useState(null);
-
-useEffect(() => {
-  const tiptapEditor = new Editor({
-    extensions: [StarterKit],
-    content: '',
-    editorProps: {
-      attributes: {
-        class: 'border rounded p-4 min-h-[300px] focus:outline-none bg-white border-black border-2',
-      },
-    },
-  });
-  setEditor(tiptapEditor);
-
-  return () => {
-    tiptapEditor?.destroy();
-  };
-}, []);
-
-
-  // Fetch Privacy Policy
+  // Fetch Terms & Conditions
   useEffect(() => {
     const fetchPolicy = async () => {
       try {
@@ -86,7 +38,7 @@ useEffect(() => {
         const policy = res.data?.data;
         if (policy) {
           setPrivacyData(policy);
-          editor?.commands.setContent(policy.TermsCondition || '');
+          setContent(policy.TermsCondition || '');
         }
       } catch (err) {
         console.error('Fetch Policy Error:', err);
@@ -95,14 +47,11 @@ useEffect(() => {
       }
     };
 
-    if (token && editor) {
-      fetchPolicy();
-    }
-  }, [token, editor]);
+    if (token) fetchPolicy();
+  }, [token]);
 
   // Create
   const handleCreate = async () => {
-    const content = editor?.getHTML() || '';
     if (!content.trim()) return;
 
     try {
@@ -119,7 +68,7 @@ useEffect(() => {
       );
       setFeedback({ message: 'Policy created successfully!', success: true, open: true });
       setPrivacyData(res.data?.data);
-      editor?.commands.clearContent();
+      setContent('');
     } catch (err) {
       console.error(err);
       setFeedback({
@@ -134,7 +83,7 @@ useEffect(() => {
 
   // Update
   const handleUpdate = async () => {
-    const content = editor?.getHTML() || '';
+    if (!confirm("Are you sure you want to Update Terms and conditions?")) return;
     if (!content.trim() || !privacyData?.id) return;
 
     try {
@@ -150,7 +99,7 @@ useEffect(() => {
         }
       );
       setFeedback({ message: 'Policy updated successfully!', success: true, open: true });
-      setPrivacyData({ ...privacyData, termscondition: content });
+      setPrivacyData({ ...privacyData, TermsCondition: content });
       setEditing(false);
     } catch (err) {
       console.error(err);
@@ -164,7 +113,7 @@ useEffect(() => {
     }
   };
 
-  if (loading || !editor) {
+  if (loading) {
     return (
       <Container maxWidth="md">
         <Box mt={5} display="flex" justifyContent="center">
@@ -177,38 +126,42 @@ useEffect(() => {
   return (
     <Container maxWidth="md">
       <Box mt={5}>
-        <Typography variant="h4" gutterBottom>
-          Terms and conditions
-        </Typography>
+        
 
         {privacyData && !editing ? (
           <>
-            <Box
-              sx={{
-                whiteSpace: 'pre-wrap',
-                backgroundColor: '#f5f5f5',
-                padding: 2,
-                borderRadius: 1,
-              }}
-              dangerouslySetInnerHTML={{ __html: privacyData.TermsCondition }}
-            />
-            <Box mt={2}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '10px' }}>
+          <h1>Terms and conditions</h1>
+          <Box mt={2}>
               <Button
                 variant="contained"
                 onClick={() => {
                   setEditing(true);
-                  editor?.commands.setContent(privacyData.TermsCondition || '');
+                  setContent(privacyData.TermsCondition || '');
                 }}
               >
                 Edit
               </Button>
             </Box>
+          </div>
+            <Box
+              sx={{
+                whiteSpace: 'pre-wrap',
+                backgroundColor: '#f9f9f9',
+                padding: 2,
+                borderRadius: 2,
+             border: '1px solid #c5bdbdff',
+             boxShadow: '0 2px 4px rgba(0, 0, 0, 0.7)',
+              }}
+              dangerouslySetInnerHTML={{ __html: privacyData.TermsCondition }}
+            />
+            
           </>
         ) : (
           <>
-            <MenuBar editor={editor} />
-            <EditorContent editor={editor} sx={{padding:2}} />
-            <Box mt={3}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '10px' }}>
+          <h1>Terms and conditions</h1>
+          <Box mt={3}>
               <Button
                 variant="contained"
                 color="primary"
@@ -218,6 +171,18 @@ useEffect(() => {
                 {submitting ? <CircularProgress size={24} color="inherit" /> : privacyData ? 'Update' : 'Submit'}
               </Button>
             </Box>
+          </div>
+            <ReactQuill
+              value={content}
+              onChange={setContent}
+              theme="snow"
+              style={{
+                backgroundColor: '#fff',
+                minHeight: '300px',
+                marginBottom: '16px',
+              }}
+            />
+            
           </>
         )}
       </Box>
