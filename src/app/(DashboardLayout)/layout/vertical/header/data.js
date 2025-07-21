@@ -48,7 +48,7 @@ const notifications = [
 //
 const profile = [
   {
-    href: "/",
+    href: "/profile",
     title: "My Profile",
     subtitle: "Account Settings",
     icon: "/images/svgs/icon-account.svg",

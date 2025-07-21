@@ -16,6 +16,7 @@ import dynamic from 'next/dynamic';
 
 const ReactQuill = dynamic(() => import('react-quill'), { ssr: false });
 import 'react-quill/dist/quill.snow.css';
+import ConfirmDialog from '../ConfirmDialog';
 
 const PrivacyPolicies = () => {
   const [privacyData, setPrivacyData] = useState(null);
@@ -24,6 +25,8 @@ const PrivacyPolicies = () => {
   const [submitting, setSubmitting] = useState(false);
   const [feedback, setFeedback] = useState({ message: '', success: true, open: false });
   const [content, setContent] = useState('');
+  const [confirmOpen, setConfirmOpen] = useState(false);
+  
 
   const user = typeof window !== 'undefined' ? JSON.parse(sessionStorage.getItem('user')) : null;
   const token = user?.data?.adminToken;
@@ -84,7 +87,6 @@ const PrivacyPolicies = () => {
 
   // Update
   const handleUpdate = async () => {
-    if (!confirm("Are you sure you want to Update this Privacy Polcies?")) return;
     if (!content.trim() || !privacyData?.id) return;
 
     try {
@@ -114,6 +116,10 @@ const PrivacyPolicies = () => {
     }
   };
 
+  const  handleform = () => {
+    setConfirmOpen(true)
+  }
+
   if (loading) {
     return (
       <Container maxWidth="md">
@@ -123,6 +129,8 @@ const PrivacyPolicies = () => {
       </Container>
     );
   }
+
+  
 
   return (
     <Container maxWidth="md">
@@ -149,7 +157,6 @@ const PrivacyPolicies = () => {
             <Box
               sx={{
                 whiteSpace: 'pre-wrap',
-                backgroundColor: '#f9f9f9',
                 padding: 2,
                 borderRadius: 2,
              border: '1px solid #c5bdbdff',
@@ -168,7 +175,7 @@ const PrivacyPolicies = () => {
               <Button
                 variant="contained"
                 color="primary"
-                onClick={privacyData ? handleUpdate : handleCreate}
+                onClick={privacyData ? handleform : handleCreate}
                 disabled={submitting}
               >
                 {submitting ? <CircularProgress size={24} color="inherit" /> : privacyData ? 'Update' : 'Submit'}
@@ -180,7 +187,7 @@ const PrivacyPolicies = () => {
               value={content}
               onChange={setContent}
               theme="snow"
-              style={{ backgroundColor: '#fff', minHeight: '300px', marginBottom: '16px' }}
+              style={{  minHeight: '300px', marginBottom: '16px' }}
             />
             
           </>
@@ -191,11 +198,19 @@ const PrivacyPolicies = () => {
         open={feedback.open}
         autoHideDuration={3000}
         onClose={() => setFeedback({ ...feedback, open: false })}
+        anchorOrigin={{ vertical: 'top', horizontal: 'center' }}
       >
         <Alert severity={feedback.success ? 'success' : 'error'}>
           {feedback.message}
         </Alert>
       </Snackbar>
+      <ConfirmDialog
+              open={confirmOpen}
+              onClose={() => setConfirmOpen(false)}
+              onConfirm={handleUpdate}
+              title="Update Privacy Policy?"
+              message="Are you sure you want to update the Privacy Policy?"
+            />
     </Container>
   );
 };

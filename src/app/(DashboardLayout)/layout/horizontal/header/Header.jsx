@@ -83,7 +83,7 @@ const Header = () => {
           {/* ------------------------------------------- */}
 
          
-          <Notifications />
+          {/* <Notifications /> */}
           <Profile />
         </Stack>
       </ToolbarStyled>

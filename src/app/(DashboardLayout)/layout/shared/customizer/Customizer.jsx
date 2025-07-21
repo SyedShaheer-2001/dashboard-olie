@@ -104,7 +104,7 @@ const Customizer = () => {
       {/* ------------------------------------------- */}
       {/* --Floating Button to open customizer ------ */}
       {/* ------------------------------------------- */}
-      {/* <Tooltip title="Settings">
+      <Tooltip title="Settings">
         <Fab
           color="primary"
           aria-label="settings"
@@ -113,8 +113,8 @@ const Customizer = () => {
         >
           <IconSettings stroke={1.5} />
         </Fab>
-      </Tooltip> */}
-      {/* <Drawer
+      </Tooltip>
+      <Drawer
         anchor="right"
         open={showDrawer}
         onClose={() => setShowDrawer(false)}
@@ -125,11 +125,11 @@ const Customizer = () => {
             },
           }
         }}
-      > */}
+      >
         {/* ------------------------------------------- */}
         {/* ------------ Customizer Sidebar ------------- */}
         {/* ------------------------------------------- */}
-        {/* <Scrollbar sx={{ height: 'calc(100vh - 5px)' }}>
+        <Scrollbar sx={{ height: 'calc(100vh - 5px)' }}>
           <Box p={2} display="flex" justifyContent={'space-between'} alignItems="center">
             <Typography variant="h4">Settings</Typography>
 
@@ -138,11 +138,11 @@ const Customizer = () => {
             </IconButton>
           </Box>
           <Divider />
-          <Box p={3}> */}
+          <Box p={3}>
             {/* ------------------------------------------- */}
             {/* ------------ Dark light theme setting ------------- */}
             {/* ------------------------------------------- */}
-            {/* <Typography variant="h6" gutterBottom>
+            <Typography variant="h6" gutterBottom>
               Theme Option
             </Typography>
             <Stack direction={'row'} gap={2} my={2}>
@@ -160,7 +160,7 @@ const Customizer = () => {
               </StyledBox>
             </Stack>
 
-            <Box pt={3} /> */}
+            <Box pt={3} />
             {/* ------------------------------------------- */}
             {/* ------------ RTL theme setting -------------*/}
             {/* ------------------------------------------- */}
@@ -180,9 +180,9 @@ const Customizer = () => {
                 />{' '}
                 RTL
               </StyledBox>
-            </Stack>
+            </Stack> */}
 
-            <Box pt={3} /> */}
+            <Box pt={3} />
             {/* ------------------------------------------- */}
             {/* ------------ Theme Color setting ------------- */}
             {/* ------------------------------------------- */}
@@ -214,8 +214,8 @@ const Customizer = () => {
                   </StyledBox>
                 </Grid>
               ))}
-            </Grid>
-            <Box pt={4} /> */}
+            </Grid> */}
+            <Box pt={4} />
             {/* ------------------------------------------- */}
             {/* ------------ Layout Horizontal / Vertical ------------- */}
             {/* ------------------------------------------- */}
@@ -233,8 +233,8 @@ const Customizer = () => {
                 <PaddingTwoTone color={activeLayout === 'horizontal' ? 'primary' : 'inherit'} />
                 Horizontal
               </StyledBox>
-            </Stack>
-            <Box pt={4} /> */}
+            </Stack> */}
+            <Box pt={4} />
             {/* ------------------------------------------- */}
             {/* ------------ Layout Boxed / Full ------------- */}
             {/* ------------------------------------------- */}
@@ -254,8 +254,8 @@ const Customizer = () => {
                 />
                 Full
               </StyledBox>
-            </Stack>
-            <Box pt={4} /> */}
+            </Stack> */}
+            <Box pt={4} />
             {/* ------------------------------------------- */}
             {/* ------------ Sidebar Color setting ------------- */}
             {/* ------------------------------------------- */}
@@ -263,11 +263,11 @@ const Customizer = () => {
             {/* ------------------------------------------- */}
             {/* ------------ Theme Color setting ------------- */}
             {/* ------------------------------------------- */}
-            {/* {activeLayout === "horizontal" ? (
+            {activeLayout === "horizontal" ? (
               ''
-            ) : ( */}
-              {/* <>
-                <Typography variant="h6" gutterBottom>
+            ) : (
+              <>
+                {/* <Typography variant="h6" gutterBottom>
                   Sidebar Type
                 </Typography>
                 <Stack direction={'row'} gap={2} my={2}>
@@ -279,11 +279,11 @@ const Customizer = () => {
                     <ViewSidebarTwoToneIcon color={isCollapse === "mini-sidebar" ? 'primary' : 'inherit'} />
                     mini
                   </StyledBox>
-                </Stack>
+                </Stack> */}
               </>
-            )} */}
-            {/* <Box pt={4} />
-            <Typography variant="h6" gutterBottom>
+            )}
+            <Box pt={4} />
+            {/* <Typography variant="h6" gutterBottom>
               Card With
             </Typography>
             <Stack direction={'row'} gap={2} my={2}>
@@ -295,8 +295,8 @@ const Customizer = () => {
                 <CallToActionTwoToneIcon color={isCardShadow ? 'primary' : 'inherit'} />
                 Shadow
               </StyledBox>
-            </Stack>
-            <Box pt={4} /> */}
+            </Stack> */}
+            <Box pt={4} />
             {/* ------------------------------------------- */}
             {/* ------------ Theme Color setting ------------- */}
             {/* ------------------------------------------- */}
@@ -312,10 +312,10 @@ const Customizer = () => {
               max={24}
               onChange={(event) => setIsBorderRadius(event.target.value)}
               valueLabelDisplay="auto"
-            />
+            /> */}
           </Box>
         </Scrollbar>
-      </Drawer> */}
+      </Drawer>
     </div>
   );
 };

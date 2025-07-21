@@ -1,9 +1,8 @@
 {
-  "/(DashboardLayout)/credits/page": "app/(DashboardLayout)/credits/page.js",
-  "/(DashboardLayout)/faq/page": "app/(DashboardLayout)/faq/page.js",
-  "/(DashboardLayout)/interests/page": "app/(DashboardLayout)/interests/page.js",
-  "/(DashboardLayout)/posts/page": "app/(DashboardLayout)/posts/page.js",
+  "/_not-found/page": "app/_not-found/page.js",
+  "/(DashboardLayout)/events/page": "app/(DashboardLayout)/events/page.js",
   "/(DashboardLayout)/terms-conditions/page": "app/(DashboardLayout)/terms-conditions/page.js",
-  "/(DashboardLayout)/categories/page": "app/(DashboardLayout)/categories/page.js",
-  "/(DashboardLayout)/events/page": "app/(DashboardLayout)/events/page.js"
+  "/(DashboardLayout)/users/page": "app/(DashboardLayout)/users/page.js",
+  "/(DashboardLayout)/page": "app/(DashboardLayout)/page.js",
+  "/(DashboardLayout)/profile/page": "app/(DashboardLayout)/profile/page.js"
 }

@@ -55,7 +55,8 @@ const Users = () => {
   }, [token]);
 
   return (
-    <PageContainer title="Users" description="List of all users">
+    <div style={{maxWidth:900 , margin: 'auto'}}>
+      <PageContainer title="Users" description="List of all users">
       <TableContainer
         component={Paper}
         sx={{
@@ -89,7 +90,7 @@ const Users = () => {
 
       {/* Table */}
       <Table sx={{ minWidth: 650 ,  }} size="medium" aria-label="stylish users table">
-        <TableHead sx={{ backgroundColor: '#f5f5f5'  }}>
+        <TableHead >
           <TableRow>
             {[
               'First Name',
@@ -120,10 +121,7 @@ const Users = () => {
             filteredUsers.map((user, index) => (
               <TableRow
                 key={user.id}
-                sx={{
-                  backgroundColor: index % 2 === 0 ? '#fafafa' : '#ffffff',
-                  '&:hover': { backgroundColor: '#e3f2fd' },
-                }}
+                
               >
                 <TableCell>{user.firstName}</TableCell>
                 <TableCell>{user.lastName}</TableCell>
@@ -149,6 +147,8 @@ const Users = () => {
     </Paper>
       </TableContainer>
     </PageContainer>
+    </div>
+    
   );
 };
 

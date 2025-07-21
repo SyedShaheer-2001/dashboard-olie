@@ -1,14 +1,17 @@
 'use client';
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useContext } from 'react';
 import axios from 'axios';
 import BASE_URL from '@/utils/api';
 import {
   Table, TableBody, TableCell, TableContainer, TableHead, TableRow,
-  TablePagination, Paper, IconButton
+  TablePagination, Paper, IconButton,
+  Snackbar,
+  Alert
 } from '@mui/material';
 import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
 import SearchIcon from '@mui/icons-material/Search';
+import { CustomizerContext } from '@/app/context/customizerContext';
 
 
 
@@ -21,7 +24,13 @@ const Interest = () => {
   const [showAddModal, setShowAddModal] = useState(false);
   const [seacrhTerm, setSearchTerm] = useState('');
   const [page, setPage] = useState(0);
-const [rowsPerPage, setRowsPerPage] = useState(5);
+  const [rowsPerPage, setRowsPerPage] = useState(5);
+  const [feedback, setFeedback] = useState({ message: '', success: true, open: false });
+  const { activeMode } = useContext(CustomizerContext);
+
+  const backgroundColor = activeMode === 'dark' ? '#1e1e2f' : '#ffffff';
+  const textColor = activeMode === 'dark' ? '#ffffff' : '#000000';
+ 
 
 const handleChangePage = (event, newPage) => {
   setPage(newPage);
@@ -69,8 +78,14 @@ const handleChangeRowsPerPage = (event) => {
       setNewInterest('');
       setShowAddModal(false);
       fetchInterests();
+      setFeedback({ message: 'Interest created successfully!', success: true, open: true });
     } catch (err) {
       console.error("Create error:", err);
+      setFeedback({
+        message: err?.response?.data?.message || 'Failed to create Interest',
+        success: false,
+        open: true,
+      });
     }
   };
 
@@ -81,8 +96,15 @@ const handleChangeRowsPerPage = (event) => {
         headers: { 'x-access-token': token },
       });
       fetchInterests();
+      setFeedback({ message: 'Interest delete successfully!', success: true, open: true });
+
     } catch (err) {
       console.error("Delete error:", err);
+      setFeedback({
+        message: err?.response?.data?.message || 'Failed to Delete Interest',
+        success: false,
+        open: true,
+      });
     }
   };
 
@@ -108,8 +130,14 @@ const handleChangeRowsPerPage = (event) => {
       setEditId(null);
       setEditInterest('');
       fetchInterests();
+      setFeedback({ message: 'Interest Updated successfully!', success: true, open: true });
     } catch (err) {
       console.error("Update error:", err);
+      setFeedback({
+        message: err?.response?.data?.message || 'Failed to update Interest',
+        success: false,
+        open: true,
+      });
     }
   };
 
@@ -130,7 +158,6 @@ const handleChangeRowsPerPage = (event) => {
           borderRadius: 4,
           border: '1px solid #c5bdbdff',
           boxShadow: '0 2px 4px rgba(0, 0, 0, 0.4)',
-          backgroundColor: '#f9f9f9',
           outline: 'none',
           fontSize: '16px',
         }}
@@ -155,7 +182,6 @@ const handleChangeRowsPerPage = (event) => {
     component={Paper}
     sx={{
       boxShadow: '0 2px 4px rgba(0,0,0,0.7)',
-      backgroundColor: '#f9f9f9',
     }}
   >
     <Table>
@@ -200,11 +226,10 @@ const handleChangeRowsPerPage = (event) => {
       {showModal && (
         <div style={{
           position: 'fixed', top: 0, left: 0, width: '100%',
-          height: '100%', backgroundColor: 'rgba(0,0,0,0.5)',
+          height: '100%', backgroundColor: 'rgba(0,0,0,0.8)',
           display: 'flex', alignItems: 'center', justifyContent: 'center',
         }}>
-          <div style={{
-            backgroundColor: '#fff', padding: 20, borderRadius: 8, minWidth: 300,
+          <div style={{ padding: 20, borderRadius: 8, minWidth: 300, backgroundColor: backgroundColor,
             boxShadow: '0 4px 10px rgba(0,0,0,0.2)',
           }}>
             <h3>Edit Interest</h3>
@@ -215,7 +240,7 @@ const handleChangeRowsPerPage = (event) => {
               style={{
                 width: '100%',
                 padding: 8,
-                marginBottom: 10,borderRadius: 4, border: '#c5bdbdff', boxShadow: '0 2px 4px rgba(0, 0, 0, 0.4)' , backgroundColor: '#f9f9f9', outline: "none"
+                marginBottom: 10,borderRadius: 4, border: '#c5bdbdff', boxShadow: '0 2px 4px rgba(0, 0, 0, 0.4)' ,  outline: "none"
               }}
             />
             <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
@@ -248,14 +273,13 @@ const handleChangeRowsPerPage = (event) => {
       {showAddModal && (
         <div style={{
           position: 'fixed', top: 0, left: 0, width: '100%',
-          height: '100%', backgroundColor: 'rgba(0,0,0,0.5)',
+          height: '100%', backgroundColor: 'rgba(0,0,0,0.8)', 
           display: 'flex', alignItems: 'center', justifyContent: 'center',
         }}>
-          <div style={{
-            backgroundColor: '#fff', padding: 20, borderRadius: 8, minWidth: 300,
-            boxShadow: '0 4px 10px rgba(0,0,0,0.2)',
+          <div style={{ padding: 20, borderRadius: 8, minWidth: 300,
+            boxShadow: '0 4px 10px rgba(0,0,0,0.2)', backgroundColor: backgroundColor
           }}>
-            <h3>Add New Interest</h3>
+            <h3 >Add New Interest</h3>
             <input
               type="text"
               value={newInterest}
@@ -263,7 +287,7 @@ const handleChangeRowsPerPage = (event) => {
               style={{
                 width: '100%',
                 padding: 8,
-                marginBottom: 10,borderRadius: 4, border: '#c5bdbdff', boxShadow: '0 2px 4px rgba(0, 0, 0, 0.4)' , backgroundColor: '#f9f9f9', outline: "none"
+                marginBottom: 10,borderRadius: 4, border: '#c5bdbdff', boxShadow: '0 2px 4px rgba(0, 0, 0, 0.4)' , outline: "none"
               }}
             />
             <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
@@ -298,6 +322,16 @@ const handleChangeRowsPerPage = (event) => {
           </div>
         </div>
       )}
+      <Snackbar
+              open={feedback.open}
+              autoHideDuration={3000}
+              onClose={() => setFeedback({ ...feedback, open: false })}
+              anchorOrigin={{ vertical: 'top', horizontal: 'center' }}
+            >
+              <Alert severity={feedback.success ? 'success' : 'error'}>
+                {feedback.message}
+              </Alert>
+            </Snackbar>
     </div>
   );
 };

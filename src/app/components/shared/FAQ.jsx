@@ -1,7 +1,9 @@
 'use client';
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useContext } from "react";
 import axios from "axios";
 import BASE_URL from '@/utils/api';
+import { Alert, Snackbar } from "@mui/material";
+import { CustomizerContext } from '@/app/context/customizerContext';
 
 const FAQ = () => {
   const [faqs, setFaqs] = useState([]);
@@ -11,9 +13,13 @@ const FAQ = () => {
   const [options, setOptions] = useState([{ text: "", isCorrect: false }]);
   const [message, setMessage] = useState("");
   const [editId, setEditId] = useState(null);
-
+  const [feedback, setFeedback] = useState({ message: '', success: true, open: false });
   const user = typeof window !== 'undefined' ? JSON.parse(sessionStorage.getItem('user')) : null;
   const token = user?.data?.adminToken;
+        const { activeMode } = useContext(CustomizerContext);
+        
+          const backgroundColor = activeMode === 'dark' ? '#1e1e2f' : '#ffffff';
+          const textColor = activeMode === 'dark' ? '#ffffff' : '#000000';
 
   useEffect(() => {
     fetchFaqs();
@@ -75,6 +81,8 @@ const FAQ = () => {
           },
         });
         setMessage("✅ Question updated successfully!");
+      setFeedback({ message: 'Question updated successfully!', success: true, open: true });
+
       } else {
         await axios.post(`${BASE_URL}/admin/content/createFaqs`, {
           question,
@@ -86,13 +94,21 @@ const FAQ = () => {
           },
         });
         setMessage("✅ Question created successfully!");
+      setFeedback({ message: 'Question created successfully!', success: true, open: true });
+
       }
       resetForm();
       setShowForm(false); // Close modal
       fetchFaqs();
+
     } catch (error) {
       console.error("Error saving question:", error);
       setMessage("❌ An error occurred.");
+      setFeedback({
+        message: err?.response?.data?.message || 'Failed to create question',
+        success: false,
+        open: true,
+      });
     }
   };
 
@@ -111,9 +127,15 @@ const FAQ = () => {
       });
       setMessage("Question deleted.");
       fetchFaqs();
+      setFeedback({ message: 'Question deleted successfully!', success: true, open: true });
     } catch (error) {
       console.error("Failed to delete:", error);
       setMessage("❌ Delete failed.");
+      setFeedback({
+        message: err?.response?.data?.message || 'Failed to delete question',
+        success: false,
+        open: true,
+      });
     }
   };
 
@@ -138,7 +160,7 @@ const FAQ = () => {
       ) : (
         <div>
           {faqs.map((faq) => (
-            <div key={faq.id} className="primaryColor" style={{ position: 'relative', marginBottom: 20, maxWidth: '900px', padding: 20, boxShadow: '0 2px 4px rgba(0,0,0,0.7)', borderRadius: 8, paddingBottom: 10 }}>
+            <div key={faq.id}  style={{ position: 'relative', marginBottom: 20, maxWidth: '900px', padding: 20, boxShadow: '0 2px 4px rgba(0,0,0,0.7)', borderRadius: 8, paddingBottom: 10 }}>
              <div style={{fontSize:'18px'}}> <strong>Q:</strong> {faq.question} </div>
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
               <ul>
@@ -170,7 +192,7 @@ const FAQ = () => {
 
       {showForm && (
         <div className="modal-backdrop">
-          <div className="modal">
+          <div className="modal" style={{ backgroundColor: backgroundColor, color: textColor }}>
             <form onSubmit={handleCreateOrUpdate}>
               <h3>{editId ? "Update Question" : "Add Question"}</h3>
 
@@ -181,7 +203,7 @@ const FAQ = () => {
                   value={question}
                   onChange={(e) => setQuestion(e.target.value)}
                   required
-                  style={{ width: "100%", padding: 8, marginBottom: 10 , borderRadius: 4, border: '#c5bdbdff', boxShadow: '0 2px 4px rgba(0, 0, 0, 0.4)' , backgroundColor: '#f9f9f9', outline: "none", padding: 12 }}
+                  style={{ width: "100%", padding: 8, marginBottom: 10 , borderRadius: 4, border: '#c5bdbdff', boxShadow: '0 2px 4px rgba(0, 0, 0, 0.4)' ,  outline: "none", padding: 12 }}
                 />
               </div>
 
@@ -196,7 +218,7 @@ const FAQ = () => {
                       handleOptionChange(index, "text", e.target.value)
                     }
                     required
-                    style={{ width: "60%", marginRight: 10 , borderRadius: 4, border: '#c5bdbdff', boxShadow: '0 2px 4px rgba(0, 0, 0, 0.4)' , backgroundColor: '#f9f9f9', outline: "none", padding: 10 }}
+                    style={{ width: "60%", marginRight: 10 , borderRadius: 4, border: '#c5bdbdff', boxShadow: '0 2px 4px rgba(0, 0, 0, 0.4)' , outline: "none", padding: 10 }}
                   />
                   <label>
                     <input
@@ -269,6 +291,17 @@ const FAQ = () => {
           </div>
         </div>
       )}
+
+      <Snackbar
+        open={feedback.open}
+        autoHideDuration={3000}
+        onClose={() => setFeedback({ ...feedback, open: false })}
+        anchorOrigin={{ vertical: 'top', horizontal: 'center' }}
+      >
+        <Alert severity={feedback.success ? 'success' : 'error'}>
+          {feedback.message}
+        </Alert>
+      </Snackbar>
 
       {/* {message && <p style={{ marginTop: 20 }}>{message}</p>} */}
 

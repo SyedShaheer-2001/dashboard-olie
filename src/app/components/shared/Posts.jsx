@@ -1,15 +1,18 @@
 'use client';
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState , useContext} from 'react';
 import axios from 'axios';
 import BASE_URL from '@/utils/api';
 import CircularProgress from '@mui/material/CircularProgress';
 import {
   Table, TableBody, TableCell, TableContainer, TableHead, TableRow,
-  Paper, TablePagination, IconButton
+  Paper, TablePagination, IconButton,
+  Snackbar,
+  Alert
 } from '@mui/material';
 import VisibilityIcon from '@mui/icons-material/Visibility';
 import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
+import { CustomizerContext } from '@/app/context/customizerContext';
 
 
 const CreatePost = () => {
@@ -31,6 +34,11 @@ const CreatePost = () => {
     const [page, setPage] = useState(0);
     const [rowsPerPage, setRowsPerPage] = useState(4);
     const [viewPost, setViewPost] = useState(null); // for View functionality
+    const [feedback, setFeedback] = useState({ message: '', success: true, open: false });
+        const { activeMode } = useContext(CustomizerContext);
+      
+        const backgroundColor = activeMode === 'dark' ? '#1e1e2f' : '#ffffff';
+        const textColor = activeMode === 'dark' ? '#ffffff' : '#000000';
 
     const handleChangePage = (event, newPage) => {
         setPage(newPage);
@@ -112,12 +120,24 @@ const CreatePost = () => {
                 setSelectedInterest('');
                 setShowAddModal(false);
                 fetchPosts()
+      setFeedback({ message: 'Post created successfully!', success: true, open: true });
+
             } else {
                 setMessage('❌ Something went wrong');
+                setFeedback({
+        message: err?.response?.data?.message || 'Failed to create post',
+        success: false,
+        open: true,
+      });
             }
         } catch (err) {
             console.error(err);
             setMessage('❌ Submission failed');
+            setFeedback({
+        message: err?.response?.data?.message || 'Failed to create post',
+        success: false,
+        open: true,
+      });
         }
     };
 
@@ -146,12 +166,24 @@ const CreatePost = () => {
                 setMessage('✅ Post updated successfully');
                 setShowUpdateModal(false);
                 fetchPosts(); // refresh
+      setFeedback({ message: 'Post update successfully!', success: true, open: true });
+
             } else {
                 setMessage(' Update failed');
+                setFeedback({
+        message: err?.response?.data?.message || 'Failed to update Post',
+        success: false,
+        open: true,
+      });
             }
         } catch (err) {
             console.error(err);
             setMessage(' Update error');
+            setFeedback({
+        message: err?.response?.data?.message || 'Failed to update Post',
+        success: false,
+        open: true,
+      });
         } finally {
             setIsUpdating(false);
         }
@@ -167,12 +199,24 @@ const CreatePost = () => {
             if (res.data.success) {
                 setMessage('🗑️ Post deleted');
                 fetchPosts(); // refresh
+      setFeedback({ message: 'Post deleted successfully!', success: true, open: true });
+
             } else {
                 setMessage('❌ Delete failed');
+                setFeedback({
+        message: err?.response?.data?.message || 'Failed to delete post',
+        success: false,
+        open: true,
+      });
             }
         } catch (err) {
             console.error(err);
             setMessage('❌ Delete error');
+            setFeedback({
+        message: err?.response?.data?.message || 'Failed to delete post',
+        success: false,
+        open: true,
+      });
         }
     };
 
@@ -204,7 +248,7 @@ const CreatePost = () => {
                     zIndex: 999,
                 }}>
                     <div style={{
-                        backgroundColor: 'white',
+                        backgroundColor: backgroundColor,
                         padding: 30,
                         borderRadius: 8,
                         width: '90%',
@@ -301,7 +345,7 @@ const CreatePost = () => {
 
             {/* Posts display */}
            {viewPost ? (
-  <div className='primaryColor' style={{ marginTop: 20, maxWidth: '800px', margin: 'auto', padding: 20, boxShadow: '0 2px 4px rgba(0,0,0,0.7)', borderRadius: 8 }}>
+  <div  style={{ marginTop: 20, maxWidth: '800px', margin: 'auto', padding: 20, boxShadow: '0 2px 4px rgba(0,0,0,0.7)', borderRadius: 8 }}>
     <h1>{viewPost.title}</h1>
     <img src={viewPost.image} alt="Post" style={{ width: '100%', maxHeight: 300, objectFit: 'cover' }} />
     <p>{viewPost.content}</p>
@@ -312,7 +356,7 @@ const CreatePost = () => {
     </div>
   </div>
 ) : (
-  <TableContainer component={Paper} className='primaryColor' sx={{ mt: 2, maxWidth:'950px', margin: 'auto' , boxShadow: '0 2px 4px rgba(0,0,0,0.7)'}}>
+  <TableContainer component={Paper}  sx={{ mt: 2, maxWidth:'950px', margin: 'auto' , boxShadow: '0 2px 4px rgba(0,0,0,0.7)'}}>
     <Table>
       <TableHead>
         <TableRow>
@@ -381,7 +425,7 @@ const CreatePost = () => {
                     justifyContent: 'center', alignItems: 'center', zIndex: 999,
                 }}>
                     <div style={{
-                        backgroundColor: 'white', padding: 30, borderRadius: 8,
+                        backgroundColor: backgroundColor, padding: 30, borderRadius: 8,
                         width: '90%', maxWidth: 600, boxShadow: '0 5px 15px rgba(0,0,0,0.3)',
                     }}>
                         <h2>Update Post</h2>
@@ -449,6 +493,16 @@ const CreatePost = () => {
                     </div>
                 </div>
             )}
+              <Snackbar
+                          open={feedback.open}
+                          autoHideDuration={3000}
+                          onClose={() => setFeedback({ ...feedback, open: false })}
+                          anchorOrigin={{ vertical: 'top', horizontal: 'center' }}
+                        >
+                          <Alert severity={feedback.success ? 'success' : 'error'}>
+                            {feedback.message}
+                          </Alert>
+                        </Snackbar>
 
         </div>
     );

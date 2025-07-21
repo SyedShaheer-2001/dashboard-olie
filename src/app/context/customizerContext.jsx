@@ -32,6 +32,8 @@ export const CustomizerContextProvider = ({ children }) => {
 
   }, [activeMode, activeDir, activeTheme, activeLayout, isLayout, isCollapse]);
 
+  console.log( 'activeMode' , activeMode) ;
+
   return (
     <CustomizerContext.Provider
       value={{

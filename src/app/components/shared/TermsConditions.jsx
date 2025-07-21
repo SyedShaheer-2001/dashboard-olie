@@ -16,14 +16,17 @@ import dynamic from 'next/dynamic';
 
 const ReactQuill = dynamic(() => import('react-quill'), { ssr: false });
 import 'react-quill/dist/quill.snow.css';
+import ConfirmDialog from '../ConfirmDialog';
 
 const TermsConditions = () => {
   const [privacyData, setPrivacyData] = useState(null);
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(false);
   const [editing, setEditing] = useState(false);
   const [submitting, setSubmitting] = useState(false);
   const [feedback, setFeedback] = useState({ message: '', success: true, open: false });
   const [content, setContent] = useState('');
+  const [confirmOpen, setConfirmOpen] = useState(false);
+  const[message , setMessage] = useState('')
 
   const user = typeof window !== 'undefined' ? JSON.parse(sessionStorage.getItem('user')) : null;
   const token = user?.data?.adminToken;
@@ -66,9 +69,11 @@ const TermsConditions = () => {
           },
         }
       );
-      setFeedback({ message: 'Policy created successfully!', success: true, open: true });
+      setFeedback({ message: 'Terms and conditions created successfully!', success: true, open: true });
       setPrivacyData(res.data?.data);
       setContent('');
+      console.log('Policy created successfully:', res);
+
     } catch (err) {
       console.error(err);
       setFeedback({
@@ -83,7 +88,6 @@ const TermsConditions = () => {
 
   // Update
   const handleUpdate = async () => {
-    if (!confirm("Are you sure you want to Update Terms and conditions?")) return;
     if (!content.trim() || !privacyData?.id) return;
 
     try {
@@ -98,7 +102,7 @@ const TermsConditions = () => {
           },
         }
       );
-      setFeedback({ message: 'Policy updated successfully!', success: true, open: true });
+      setFeedback({ message: 'Terms and Conditions updated successfully!', success: true, open: true });
       setPrivacyData({ ...privacyData, TermsCondition: content });
       setEditing(false);
     } catch (err) {
@@ -112,6 +116,10 @@ const TermsConditions = () => {
       setSubmitting(false);
     }
   };
+  const  handleform = () => {
+    setConfirmOpen(true)
+  }
+  console.log('feedback to show', feedback)
 
   if (loading) {
     return (
@@ -125,6 +133,7 @@ const TermsConditions = () => {
 
   return (
     <Container maxWidth="md">
+      {message && <p style={{ marginTop: 5, color:'red' }}>{message}</p>}
       <Box mt={5}>
         
 
@@ -147,7 +156,6 @@ const TermsConditions = () => {
             <Box
               sx={{
                 whiteSpace: 'pre-wrap',
-                backgroundColor: '#f9f9f9',
                 padding: 2,
                 borderRadius: 2,
              border: '1px solid #c5bdbdff',
@@ -165,7 +173,7 @@ const TermsConditions = () => {
               <Button
                 variant="contained"
                 color="primary"
-                onClick={privacyData ? handleUpdate : handleCreate}
+                onClick={privacyData ? handleform : handleCreate}
                 disabled={submitting}
               >
                 {submitting ? <CircularProgress size={24} color="inherit" /> : privacyData ? 'Update' : 'Submit'}
@@ -177,7 +185,6 @@ const TermsConditions = () => {
               onChange={setContent}
               theme="snow"
               style={{
-                backgroundColor: '#fff',
                 minHeight: '300px',
                 marginBottom: '16px',
               }}
@@ -191,11 +198,19 @@ const TermsConditions = () => {
         open={feedback.open}
         autoHideDuration={3000}
         onClose={() => setFeedback({ ...feedback, open: false })}
+        anchorOrigin={{ vertical: 'top', horizontal: 'center' }}
       >
         <Alert severity={feedback.success ? 'success' : 'error'}>
           {feedback.message}
         </Alert>
       </Snackbar>
+      <ConfirmDialog
+        open={confirmOpen}
+        onClose={() => setConfirmOpen(false)}
+        onConfirm={handleUpdate}
+        title="Update Terms and Conditions"
+        message="Are you sure you want to update the Terms and Conditions?"
+      />
     </Container>
   );
 };

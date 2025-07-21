@@ -20,6 +20,8 @@ import BASE_URL from '@/utils/api';
 const AuthLogin = ({ title, subtitle, subtext }) => {
 const [email, setUsername] = useState('');
 const [password, setPassword] = useState('');
+const [loading, setLoading] = useState(false);
+const [message, setMessage] = useState('');
 
 const router = useRouter();
 
@@ -27,6 +29,7 @@ const router = useRouter();
 
 const handleLogin = async () => {
   try {
+    setLoading(true)
     const response = await axios.post(`${BASE_URL}/admin/auth/adminLogin`, {
       email,
       password,
@@ -39,11 +42,15 @@ const handleLogin = async () => {
     }
   } catch (error) {
     if (error.response) {
-      console.error('Login failed:', error.response.data.message || error.message);
+      console.error('Login failed:', error.response.data.message);
+      setMessage(error.response.data.message || 'Login failed. Please try again.');
     } else {
-      console.error('Network/API error:', error.message);
+      console.error('Network/API error:', error);
+      setMessage(error.response.data.message || 'Login failed. Please try again.');
     }
-  }
+  }finally{
+      setLoading(false)
+    }
 };
 
 
@@ -85,6 +92,7 @@ const handleLogin = async () => {
         alignItems="center"
         my={2}
       >
+         {message && <p style={{ marginTop: 5, color:'red' }}>{message}</p>}
         
         
       </Stack>
@@ -97,6 +105,7 @@ const handleLogin = async () => {
         fullWidth
         type="submit"
   onClick={handleLogin}
+  disabled={loading}
       >
         Sign In
       </Button>

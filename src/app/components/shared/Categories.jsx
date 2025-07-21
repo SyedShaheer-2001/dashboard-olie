@@ -1,5 +1,5 @@
 'use client';
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useContext } from 'react';
 import axios from 'axios';
 import BASE_URL from '@/utils/api';
 import {
@@ -12,10 +12,14 @@ import {
   TableRow,
   Paper,
   IconButton,
+  Snackbar,
+  Alert,
 } from '@mui/material';
 import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
 import SearchIcon from '@mui/icons-material/Search';
+import { CustomizerContext } from '@/app/context/customizerContext';
+
 
 
 const Categories = () => {
@@ -26,9 +30,15 @@ const Categories = () => {
   const [showModal, setShowModal] = useState(false);
   const [showAddModal, setShowAddModal] = useState(false);
   const [searchTerm, setSearchTerm] = useState('');
+    const [feedback, setFeedback] = useState({ message: '', success: true, open: false });
 
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(5);
+
+  const { activeMode } = useContext(CustomizerContext);
+  
+    const backgroundColor = activeMode === 'dark' ? '#1e1e2f' : '#ffffff';
+    const textColor = activeMode === 'dark' ? '#ffffff' : '#000000';
 
   const handleChangePage = (event, newPage) => {
     setPage(newPage);
@@ -74,8 +84,14 @@ const Categories = () => {
       setNewCategory('');
       setShowAddModal(false);
       fetchCategories();
+      setFeedback({ message: 'Category created successfully!', success: true, open: true });
     } catch (err) {
       console.error("Create error:", err);
+      setFeedback({
+        message: err?.response?.data?.message || 'Failed to create Category',
+        success: false,
+        open: true,
+      });
     }
   };
 
@@ -86,8 +102,14 @@ const Categories = () => {
         headers: { 'x-access-token': token },
       });
       fetchCategories();
+      setFeedback({ message: 'Category delete successfully!', success: true, open: true });
     } catch (err) {
       console.error("Delete error:", err);
+      setFeedback({
+        message: err?.response?.data?.message || 'Failed to Delete Category',
+        success: false,
+        open: true,
+      });
     }
   };
 
@@ -113,8 +135,15 @@ const Categories = () => {
       setEditId(null);
       setEditCategory('');
       fetchCategories();
+      setFeedback({ message: 'Category Updated successfully!', success: true, open: true });
+
     } catch (err) {
       console.error("Update error:", err);
+      setFeedback({
+        message: err?.response?.data?.message || 'Failed to update Category',
+        success: false,
+        open: true,
+      });
     }
   };
 
@@ -135,7 +164,6 @@ const Categories = () => {
              borderRadius: 4,
              border: '1px solid #c5bdbdff',
              boxShadow: '0 2px 4px rgba(0, 0, 0, 0.4)',
-             backgroundColor: '#f9f9f9',
              outline: 'none',
              fontSize: '16px',
            }}
@@ -160,7 +188,6 @@ const Categories = () => {
        component={Paper}
        sx={{
          boxShadow: '0 2px 4px rgba(0,0,0,0.7)',
-         backgroundColor: '#f9f9f9',
        }}
      >
        <Table>
@@ -208,7 +235,7 @@ const Categories = () => {
           display: 'flex', alignItems: 'center', justifyContent: 'center',
         }}>
           <div style={{
-            backgroundColor: '#fff', padding: 20, borderRadius: 8, minWidth: 300,
+            backgroundColor: backgroundColor, padding: 20, borderRadius: 8, minWidth: 300,
             boxShadow: '0 4px 10px rgba(0,0,0,0.2)',
           }}>
             <h3>Edit Category</h3>
@@ -223,7 +250,6 @@ const Categories = () => {
                 borderRadius: 4,
                 border: '#c5bdbdff',
                 boxShadow: '0 2px 4px rgba(0, 0, 0, 0.4)',
-                backgroundColor: '#f9f9f9',
                 outline: 'none'
               }}
             />
@@ -268,7 +294,7 @@ const Categories = () => {
           display: 'flex', alignItems: 'center', justifyContent: 'center',
         }}>
           <div style={{
-            backgroundColor: '#fff', padding: 20, borderRadius: 8, minWidth: 300,
+            backgroundColor: backgroundColor, padding: 20, borderRadius: 8, minWidth: 300,
             boxShadow: '0 4px 10px rgba(0,0,0,0.2)',
           }}>
             <h3>Add New Category</h3>
@@ -319,6 +345,17 @@ const Categories = () => {
           </div>
         </div>
       )}
+
+      <Snackbar
+        open={feedback.open}
+        autoHideDuration={3000}
+        onClose={() => setFeedback({ ...feedback, open: false })}
+        anchorOrigin={{ vertical: 'top', horizontal: 'center' }}
+      >
+        <Alert severity={feedback.success ? 'success' : 'error'}>
+          {feedback.message}
+        </Alert>
+      </Snackbar>
     </div>
   );
 };

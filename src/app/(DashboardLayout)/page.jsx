@@ -49,7 +49,7 @@ export default function Dashboard() {
     };
 
     fetchUsers();
-  }, [token]);
+  }, []);
 
   console.log("data" , userCount,userAndroid,userIOS )
 
@@ -57,13 +57,14 @@ export default function Dashboard() {
 
   
   return (
-    <PageContainer title="Dashboard" description="this is Dashboard">
+    <div style={{maxWidth: 900, margin: 'auto'}}>
+      <PageContainer title="Dashboard" description="this is Dashboard">
   <Box mt={3}>
     <Grid container spacing={3}>
       
       {/* Total Users */}
       <Grid item xs={12} sm={6} md={4}>
-        <Card sx={{ p: 3, minHeight: 160, backgroundColor: '#f5f5f5' }} elevation={4}>
+        <Card sx={{ p: 3, minHeight: 160, }} elevation={4}>
           <CardContent sx={{ display: 'flex', alignItems: 'center' }}>
             <Avatar sx={{ bgcolor: '#616161', mr: 3, width: 60, height: 60 }}>
               <PeopleIcon fontSize="large" />
@@ -78,7 +79,7 @@ export default function Dashboard() {
 
       {/* Android Users */}
       <Grid item xs={12} sm={6} md={4}>
-        <Card sx={{ p: 3, minHeight: 160, backgroundColor: '#e8f5e9' }} elevation={4}>
+        <Card sx={{ p: 3, minHeight: 160, }} elevation={4}>
           <CardContent sx={{ display: 'flex', alignItems: 'center' }}>
             <Avatar sx={{ bgcolor: '#4caf50', mr: 3, width: 60, height: 60 }}>
               <AndroidIcon fontSize="large" />
@@ -93,7 +94,7 @@ export default function Dashboard() {
 
       {/* iOS Users */}
       <Grid item xs={12} sm={6} md={4}>
-        <Card sx={{ p: 3, minHeight: 160, backgroundColor: '#e3f2fd' }} elevation={4}>
+        <Card sx={{ p: 3, minHeight: 160, }} elevation={4}>
           <CardContent sx={{ display: 'flex', alignItems: 'center' }}>
             <Avatar sx={{ bgcolor: '#2196f3', mr: 3, width: 60, height: 60 }}>
               <AppleIcon fontSize="large" />
@@ -109,6 +110,9 @@ export default function Dashboard() {
     </Grid>
   </Box>
 </PageContainer>
+
+    </div>
+    
 
   );
 }

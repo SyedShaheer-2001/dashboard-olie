@@ -1,16 +1,20 @@
 'use client';
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useContext } from 'react';
 import axios from 'axios';
 import BASE_URL from '@/utils/api';
 import { max } from 'moment';
 import {
   Table, TableBody, TableCell, TableContainer, TableHead, TableRow,
   Paper, TablePagination, IconButton,
-  Button
+  Button,
+  Snackbar,
+  Alert
 } from '@mui/material';
 import VisibilityIcon from '@mui/icons-material/Visibility';
 import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
+import { CustomizerContext } from '@/app/context/customizerContext';
+
 
 
 const Events = () => {
@@ -38,6 +42,12 @@ const Events = () => {
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(4);
   const [viewEvent, setViewEvent] = useState(null); // to show single event
+  const [feedback, setFeedback] = useState({ message: '', success: true, open: false });
+    const { activeMode } = useContext(CustomizerContext);
+  
+    const backgroundColor = activeMode === 'dark' ? '#1e1e2f' : '#ffffff';
+    const textColor = activeMode === 'dark' ? '#ffffff' : '#000000';
+  
 
   const handleChangePage = (event, newPage) => {
     setPage(newPage);
@@ -97,8 +107,15 @@ const Events = () => {
       setShowAddModal(false);
       setNewEvent({ ...newEvent, image: null });
       fetchEvents();
+      setFeedback({ message: 'Event created successfully!', success: true, open: true });
+
     } catch (error) {
       console.error('Failed to add event:', error);
+      setFeedback({
+        message: err?.response?.data?.message || 'Failed to create Event',
+        success: false,
+        open: true,
+      });
     }
   };
 
@@ -109,8 +126,14 @@ const Events = () => {
         headers: { 'x-access-token': token },
       });
       fetchEvents();
+      setFeedback({ message: 'Event Deleted successfully!', success: true, open: true });
     } catch (error) {
       console.error('Delete failed:', error);
+      setFeedback({
+        message: err?.response?.data?.message || 'Failed to Delete Event',
+        success: false,
+        open: true,
+      });
     }
   };
 
@@ -148,8 +171,16 @@ const Events = () => {
 
       setShowUpdateModal(false);
       fetchEvents();
+      setFeedback({ message: 'Event updated successfully!', success: true, open: true });
+
+      
     } catch (error) {
       console.error('Update failed:', error);
+      setFeedback({
+        message: err?.response?.data?.message || 'Failed to update Event',
+        success: false,
+        open: true,
+      });
     }
   };
 
@@ -162,9 +193,83 @@ const Events = () => {
       placeholder={key}
       value={stateObj[key]}
       onChange={(e) => setState({ ...stateObj, [key]: e.target.value })}
-      style={{ width: '100%', padding: 8, marginBottom: 10, borderRadius: 4, border: '#c5bdbdff', boxShadow: '0 2px 4px rgba(0, 0, 0, 0.4)', backgroundColor: '#f9f9f9', outline: 'none' }}
+      style={{ width: '100%', padding: 8, marginBottom: 10, borderRadius: 4, border: '#c5bdbdff', boxShadow: '0 2px 4px rgba(0, 0, 0, 0.4)', outline: 'none' }}
     />
   );
+
+  const modalStyle = {
+  position: 'fixed', top: 20, left: 0, width: '100%', height: '100%',
+  backgroundColor: 'rgba(0,0,0,0.5)', display: 'flex', alignItems: 'center', justifyContent: 'center',
+};
+
+const modalContent = {
+  backgroundColor: backgroundColor, padding: 20, borderRadius: 8, minWidth: 300,
+  boxShadow: '0 4px 10px rgba(0,0,0,0.2)', maxWidth: 600
+};
+
+const cancelBtn = {
+  marginRight: 10, padding: '8px 12px', borderRadius: 4, backgroundColor: '#6c757d', color: 'white', border: 'none', cursor: 'pointer',
+};
+
+const saveBtn = {
+  padding: '8px 12px', borderRadius: 4, backgroundColor: '#28a745', color: 'white', border: 'none'
+};
+
+const styles = {
+  cardGrid: {
+    maxWidth: '800px',
+    margin: 'auto',
+  },
+  card: {
+    backgroundColor: backgroundColor,
+    padding: '20px',
+    paddingBottom: '20px',
+    borderRadius: '10px',
+    boxShadow: '0 4px 8px rgba(0,0,0,0.4)',
+    transition: 'transform 0.2s',
+    maxWidth: '100%',
+  },
+  imageWrapper: {
+    overflow: 'hidden',
+    borderRadius: '8px',
+    marginBottom: '10px',
+  },
+  image: {
+    width: '100%',
+    height: '180px',
+    objectFit: 'cover',
+    borderRadius: '8px',
+    transition: 'transform 0.3s ease-in-out',
+  },
+  title: {
+    margin: '30px 0',
+    fontSize: '40px',
+    fontWeight: 600,
+  },
+  buttonGroup: {
+    display: 'flex',
+    justifyContent: 'flex-end',
+    gap: '10px',
+    marginTop: '10px',
+  },
+  updateBtn: {
+    backgroundColor: '#007bff',
+    color: '#fff',
+    padding: '8px 14px',
+    border: 'none',
+    borderRadius: '5px',
+    cursor: 'pointer',
+  },
+  deleteBtn: {
+    backgroundColor: '#dc3545',
+    color: '#fff',
+    padding: '8px 14px',
+    border: 'none',
+    borderRadius: '5px',
+    cursor: 'pointer',
+  },
+};
+
 
   return (
     <div style={{ margin: 'auto', maxWidth: '950px'}}>
@@ -193,7 +298,6 @@ const Events = () => {
     maxWidth: '950px',
     margin: 'auto',
     boxShadow: '0 2px 4px rgba(0,0,0,0.7)',
-    backgroundColor: '#f9f9f9'
   }}
 >
   <Table>
@@ -334,84 +438,21 @@ const Events = () => {
           </div>
         </div>
       )}
+      <Snackbar
+        open={feedback.open}
+        autoHideDuration={3000}
+        onClose={() => setFeedback({ ...feedback, open: false })}
+        anchorOrigin={{ vertical: 'top', horizontal: 'center' }}
+      >
+        <Alert severity={feedback.success ? 'success' : 'error'}>
+          {feedback.message}
+        </Alert>
+      </Snackbar>
     </div>
   );
 };
 
 export default Events;
 
-const modalStyle = {
-  position: 'fixed', top: 20, left: 0, width: '100%', height: '100%',
-  backgroundColor: 'rgba(0,0,0,0.5)', display: 'flex', alignItems: 'center', justifyContent: 'center',
-};
-
-const modalContent = {
-  backgroundColor: '#fff', padding: 20, borderRadius: 8, minWidth: 300,
-  boxShadow: '0 4px 10px rgba(0,0,0,0.2)', maxWidth: 600
-};
-
-const cancelBtn = {
-  marginRight: 10, padding: '8px 12px', borderRadius: 4, backgroundColor: '#6c757d', color: 'white', border: 'none', cursor: 'pointer',
-};
-
-const saveBtn = {
-  padding: '8px 12px', borderRadius: 4, backgroundColor: '#28a745', color: 'white', border: 'none'
-};
-
-const styles = {
-  cardGrid: {
-    maxWidth: '800px',
-    margin: 'auto',
-  },
-  card: {
-    backgroundColor: '#f8f5f5ff',
-    padding: '20px',
-    paddingBottom: '20px',
-    borderRadius: '10px',
-    boxShadow: '0 4px 8px rgba(0,0,0,0.4)',
-    transition: 'transform 0.2s',
-    maxWidth: '100%',
-  },
-  imageWrapper: {
-    overflow: 'hidden',
-    borderRadius: '8px',
-    marginBottom: '10px',
-  },
-  image: {
-    width: '100%',
-    height: '180px',
-    objectFit: 'cover',
-    borderRadius: '8px',
-    transition: 'transform 0.3s ease-in-out',
-  },
-  title: {
-    margin: '30px 0',
-    fontSize: '40px',
-    fontWeight: 600,
-    color: '#333',
-  },
-  buttonGroup: {
-    display: 'flex',
-    justifyContent: 'flex-end',
-    gap: '10px',
-    marginTop: '10px',
-  },
-  updateBtn: {
-    backgroundColor: '#007bff',
-    color: '#fff',
-    padding: '8px 14px',
-    border: 'none',
-    borderRadius: '5px',
-    cursor: 'pointer',
-  },
-  deleteBtn: {
-    backgroundColor: '#dc3545',
-    color: '#fff',
-    padding: '8px 14px',
-    border: 'none',
-    borderRadius: '5px',
-    cursor: 'pointer',
-  },
-};
 
 
