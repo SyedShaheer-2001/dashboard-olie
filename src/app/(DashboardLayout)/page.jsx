@@ -22,9 +22,10 @@ export default function Dashboard() {
   const [userCount, setUserCount] = useState('')
   const [userAndroid, setUserAndroid] = useState('')
   const [userIOS, setUserIOS] = useState('')
-  const user = JSON.parse(sessionStorage.getItem('user'));
-  const token = user?.data?.adminToken;
+  
   useEffect(() => {
+    const user = JSON.parse(sessionStorage.getItem('user'));
+  const token = user?.data?.adminToken;
     if (!token) return; 
 
     const fetchUsers = async () => {

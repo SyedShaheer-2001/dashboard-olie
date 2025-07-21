@@ -14,7 +14,11 @@ export const Profile = () => {
   const { isSidebarHover, isCollapse } = useContext(CustomizerContext);
   const lgUp = useMediaQuery((theme) => theme.breakpoints.up('lg'));
   const hideMenu = lgUp ? isCollapse == 'mini-sidebar' && !isSidebarHover : '';
-  const user = JSON.parse(sessionStorage.getItem('user'));
+  const [user , setUser] = useState();
+  useEffect(() => { 
+     const user = JSON.parse(sessionStorage.getItem('user'));
+     setUser(user);
+  }, []);
    const myImage = typeof window !== 'undefined' ? localStorage.getItem('myImage') : null;
 
 

@@ -28,7 +28,12 @@ const TermsConditions = () => {
   const [confirmOpen, setConfirmOpen] = useState(false);
   const[message , setMessage] = useState('')
 
-  const user = typeof window !== 'undefined' ? JSON.parse(sessionStorage.getItem('user')) : null;
+   const [user , setUser] = useState();
+      useEffect(() => {
+        const USER = typeof window !== 'undefined' ? JSON.parse(sessionStorage.getItem('user')) : null;
+        setUser(USER);
+      }, []);
+  
   const token = user?.data?.adminToken;
 
   // Fetch Terms & Conditions

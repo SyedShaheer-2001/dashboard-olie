@@ -27,8 +27,13 @@ import { CircularProgress } from '@mui/material';
 
 const Profile = () => {
   const [anchorEl2, setAnchorEl2] = useState(null);
-  const user = JSON.parse(sessionStorage.getItem('user'));
-console.log("user", user)
+  const [user , setUser] = useState() 
+
+  useEffect(() => { 
+     const user = JSON.parse(sessionStorage.getItem('user'));
+     setUser(user);
+  }, []);
+ 
   const handleClick2 = (event) => {
     setAnchorEl2(event.currentTarget);
   };

@@ -65,7 +65,11 @@ const Events = () => {
 
 
 
-  const user = typeof window !== 'undefined' ? JSON.parse(sessionStorage.getItem('user')) : null;
+  const [user , setUser] = useState();
+    useEffect(() => {
+      const USER = typeof window !== 'undefined' ? JSON.parse(sessionStorage.getItem('user')) : null;
+      setUser(USER);
+    }, []);
   const token = user?.data?.adminToken;
 
   useEffect(() => {

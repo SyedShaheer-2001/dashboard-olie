@@ -1,12 +1,15 @@
 'use client';
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import BASE_URL from '@/utils/api';
 import { Alert, Snackbar } from '@mui/material';
 
 function Page() {
-  const USER = typeof window !== 'undefined' ? JSON.parse(sessionStorage.getItem('user')) : null;
-  const user = USER?.data || null;
+  const [user , setUser] = useState();
+  useEffect(() => {
+    const USER = typeof window !== 'undefined' ? JSON.parse(sessionStorage.getItem('user')) : null;
+    setUser(USER);
+  }, []);
   const token = user?.adminToken;
 
   const [showPasswordForm, setShowPasswordForm] = useState(false);
