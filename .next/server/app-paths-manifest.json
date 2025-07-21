@@ -1,8 +1,5 @@
 {
   "/_not-found/page": "app/_not-found/page.js",
-  "/(DashboardLayout)/events/page": "app/(DashboardLayout)/events/page.js",
-  "/(DashboardLayout)/terms-conditions/page": "app/(DashboardLayout)/terms-conditions/page.js",
-  "/(DashboardLayout)/users/page": "app/(DashboardLayout)/users/page.js",
-  "/(DashboardLayout)/page": "app/(DashboardLayout)/page.js",
-  "/(DashboardLayout)/profile/page": "app/(DashboardLayout)/profile/page.js"
+  "/auth/auth1/login/page": "app/auth/auth1/login/page.js",
+  "/(DashboardLayout)/page": "app/(DashboardLayout)/page.js"
 }

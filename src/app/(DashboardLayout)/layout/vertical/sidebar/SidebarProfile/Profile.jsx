@@ -5,7 +5,7 @@ import IconButton from '@mui/material/IconButton';
 import Tooltip from '@mui/material/Tooltip';
 import Typography from '@mui/material/Typography';
 import useMediaQuery from '@mui/material/useMediaQuery';
-import { useContext } from 'react';
+import { useContext, useEffect, useState } from 'react';
 import { CustomizerContext } from "@/app/context/customizerContext";
 import { IconPower } from '@tabler/icons-react';
 import Link from 'next/link';
