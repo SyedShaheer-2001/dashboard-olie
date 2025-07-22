@@ -6,11 +6,14 @@ import { Alert, Snackbar } from '@mui/material';
 
 function Page() {
   const [user , setUser] = useState();
+  const [token, setToken] = useState(null);
   useEffect(() => {
     const USER = typeof window !== 'undefined' ? JSON.parse(sessionStorage.getItem('user')) : null;
-    setUser(USER);
+    setUser(USER?.data);
+    setToken(USER?.data?.adminToken || null);
   }, []);
-  const token = user?.adminToken;
+
+  console.log("User:", user , token);
 
   const [showPasswordForm, setShowPasswordForm] = useState(false);
   const [currentPassword, setCurrentPassword] = useState('');
@@ -19,7 +22,8 @@ function Page() {
   const [feedback, setFeedback] = useState({ message: '', success: true, open: false });
 
   const handlePasswordChange = async () => {
-    if (!confirm("Are you sure you want to update your password?")) return;
+    if(token){
+       if (!confirm("Are you sure you want to update your password?")) return;
     try {
       const res = await axios.post(
         `${BASE_URL}/admin/auth/changePassword`,
@@ -39,12 +43,14 @@ function Page() {
         
       } else {
         setMessage(res.data.message || 'Failed to change password.');
-        setFeedback({ message: res.data.message || 'Failed to change password.', success: false, open: true });
+        setFeedback({ message: res?.data?.message || 'Failed to change password.', success: false, open: true });
       }
     } catch (err) {
       setMessage('Error changing password.');
       console.error(err);
-      setFeedback({ message: res.data.message || 'Failed to change password.', success: false, open: true });
+      setFeedback({ message: err?.data?.message || 'Failed to change password.', success: false, open: true });
+
+    }
 
     }
   };
@@ -65,7 +71,7 @@ function Page() {
       {!showPasswordForm ? (
         <>
           <div>
-            <p><strong>Name:</strong> {user?.name}</p>
+            <p><strong>Name:</strong> {user?.name || 'Joe Wilson'}</p>
             <p><strong>Email:</strong> {user?.email}</p>
             <p><strong>Role:</strong> {user?.userType}</p>
           </div>

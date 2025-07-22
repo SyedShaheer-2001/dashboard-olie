@@ -15,19 +15,24 @@ const FAQ = () => {
   const [editId, setEditId] = useState(null);
   const [feedback, setFeedback] = useState({ message: '', success: true, open: false });
   const [user , setUser] = useState();
+  const [token , setToken] = useState(null);
     useEffect(() => {
       const USER = typeof window !== 'undefined' ? JSON.parse(sessionStorage.getItem('user')) : null;
       setUser(USER);
+      setToken(USER?.data?.adminToken || null);
     }, []);
-  const token = user?.data?.adminToken;
+  // const token = user?.data?.adminToken;
+  console.log('token' , token)
         const { activeMode } = useContext(CustomizerContext);
         
           const backgroundColor = activeMode === 'dark' ? '#1e1e2f' : '#ffffff';
           const textColor = activeMode === 'dark' ? '#ffffff' : '#000000';
 
   useEffect(() => {
+  if (token) {
     fetchFaqs();
-  }, []);
+  }
+}, [token]);
 
   const fetchFaqs = async () => {
     try {

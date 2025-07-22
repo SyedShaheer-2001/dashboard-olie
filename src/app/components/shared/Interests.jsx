@@ -55,8 +55,10 @@ const handleChangeRowsPerPage = (event) => {
   const token = user?.data?.adminToken;
 
   useEffect(() => {
+  if (token) {
     fetchInterests();
-  }, []);
+  }
+}, [token]); 
 
   const fetchInterests = async () => {
     try {

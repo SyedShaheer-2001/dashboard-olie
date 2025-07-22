@@ -49,11 +49,6 @@ const CreatePost = () => {
         setPage(0);
     };
 
-
-    
-
-
-
     const [user , setUser] = useState();
       useEffect(() => {
         const USER = typeof window !== 'undefined' ? JSON.parse(sessionStorage.getItem('user')) : null;
@@ -62,9 +57,11 @@ const CreatePost = () => {
     const token = user?.data?.adminToken;
 
     useEffect(() => {
-        fetchInterests();
-        fetchPosts();
-    }, []);
+        if (token) {
+            fetchInterests();
+            fetchPosts();
+        }
+    }, [token]);
 
     const fetchInterests = async () => {
         try {

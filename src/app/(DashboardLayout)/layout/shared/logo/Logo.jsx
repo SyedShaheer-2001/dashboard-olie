@@ -35,8 +35,8 @@ const Logo = () => {
             src={"/images/logos/Ollie-logo.png"}
             alt="logo"
            // height={TopbarHeight}
-           height={60}
-            width={60}
+           height={50}
+            width={50}
            // width={174}
             priority
           />

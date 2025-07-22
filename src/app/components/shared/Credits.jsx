@@ -58,8 +58,10 @@ const Credits = () => {
   const token = user?.data?.adminToken;
 
   useEffect(() => {
-    fetchCredits();
-  }, []);
+    if(token){
+      fetchCredits();
+    }
+  }, [token]);
 
   const fetchCredits = async () => {
     try {

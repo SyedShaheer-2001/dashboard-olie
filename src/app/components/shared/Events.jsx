@@ -73,8 +73,10 @@ const Events = () => {
   const token = user?.data?.adminToken;
 
   useEffect(() => {
+    if (token){
     fetchEvents();
-  }, []);
+    }
+  }, [token]);
 
   const fetchEvents = async () => {
     try {

@@ -1,9 +1,10 @@
 {
   "pages": {
-    "/(DashboardLayout)/page": [
+    "/(DashboardLayout)/privacy-policies/page": [
       "static/chunks/webpack.js",
       "static/chunks/main-app.js",
-      "static/chunks/app/(DashboardLayout)/page.js"
+      "static/css/app/(DashboardLayout)/privacy-policies/page.css",
+      "static/chunks/app/(DashboardLayout)/privacy-policies/page.js"
     ],
     "/(DashboardLayout)/layout": [
       "static/chunks/webpack.js",
@@ -26,6 +27,57 @@
       "static/chunks/webpack.js",
       "static/chunks/main-app.js",
       "static/chunks/app/loading.js"
+    ],
+    "/(DashboardLayout)/page": [
+      "static/chunks/webpack.js",
+      "static/chunks/main-app.js",
+      "static/chunks/app/(DashboardLayout)/page.js"
+    ],
+    "/(DashboardLayout)/profile/page": [
+      "static/chunks/webpack.js",
+      "static/chunks/main-app.js",
+      "static/chunks/app/(DashboardLayout)/profile/page.js"
+    ],
+    "/(DashboardLayout)/posts/page": [
+      "static/chunks/webpack.js",
+      "static/chunks/main-app.js",
+      "static/chunks/app/(DashboardLayout)/posts/page.js"
+    ],
+    "/(DashboardLayout)/categories/page": [
+      "static/chunks/webpack.js",
+      "static/chunks/main-app.js",
+      "static/chunks/app/(DashboardLayout)/categories/page.js"
+    ],
+    "/(DashboardLayout)/events/page": [
+      "static/chunks/webpack.js",
+      "static/chunks/main-app.js",
+      "static/chunks/app/(DashboardLayout)/events/page.js"
+    ],
+    "/(DashboardLayout)/users/page": [
+      "static/chunks/webpack.js",
+      "static/chunks/main-app.js",
+      "static/chunks/app/(DashboardLayout)/users/page.js"
+    ],
+    "/(DashboardLayout)/terms-conditions/page": [
+      "static/chunks/webpack.js",
+      "static/chunks/main-app.js",
+      "static/css/app/(DashboardLayout)/terms-conditions/page.css",
+      "static/chunks/app/(DashboardLayout)/terms-conditions/page.js"
+    ],
+    "/(DashboardLayout)/faq/page": [
+      "static/chunks/webpack.js",
+      "static/chunks/main-app.js",
+      "static/chunks/app/(DashboardLayout)/faq/page.js"
+    ],
+    "/(DashboardLayout)/interests/page": [
+      "static/chunks/webpack.js",
+      "static/chunks/main-app.js",
+      "static/chunks/app/(DashboardLayout)/interests/page.js"
+    ],
+    "/(DashboardLayout)/credits/page": [
+      "static/chunks/webpack.js",
+      "static/chunks/main-app.js",
+      "static/chunks/app/(DashboardLayout)/credits/page.js"
     ],
     "/auth/auth1/login/page": [
       "static/chunks/webpack.js",

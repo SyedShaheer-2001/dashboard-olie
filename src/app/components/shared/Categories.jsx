@@ -61,8 +61,10 @@ const Categories = () => {
   const token = user?.data?.adminToken;
 
   useEffect(() => {
+    if (token) {
     fetchCategories();
-  }, []);
+    }
+  }, [token]);
 
   const fetchCategories = async () => {
     try {
