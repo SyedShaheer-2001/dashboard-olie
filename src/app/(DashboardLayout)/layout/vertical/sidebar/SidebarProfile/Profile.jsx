@@ -21,6 +21,13 @@ export const Profile = () => {
   }, []);
    const myImage = typeof window !== 'undefined' ? localStorage.getItem('myImage') : null;
 
+  const handleLogout = () => {
+    sessionStorage.removeItem('user');
+    localStorage.removeItem('myImage');
+    window.location.href = '/auth/auth1/login';
+  };
+
+
 
   return (
     <Box
@@ -31,10 +38,10 @@ export const Profile = () => {
     >
       {!hideMenu ? (
         <>
-          <Avatar alt="Remy Sharp" src={myImage} sx={{ height: 40, width: 40 }} />
+          {/* <Avatar alt="Remy Sharp" src={myImage} sx={{ height: 40, width: 40 }} /> */}
 
           <Box>
-            <Typography variant="h6">{user?.data?.name || "Joe Wilson"} </Typography>
+            <Typography variant="h6">{user?.data?.name || "Wilson"} </Typography>
             <Typography variant="caption">{user?.data?.userType}</Typography>
           </Box>
           <Box sx={{ ml: 'auto' }}>
@@ -43,6 +50,7 @@ export const Profile = () => {
                 color="primary"
                 component={Link}
                 href="/auth/auth1/login"
+                onClick={handleLogout}
                 aria-label="logout"
                 size="small"
               >

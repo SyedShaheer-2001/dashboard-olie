@@ -32,6 +32,7 @@ const Profile = () => {
   useEffect(() => { 
      const user = JSON.parse(sessionStorage.getItem('user'));
      setUser(user);
+     setImage(user?.data?.image || null);
   }, []);
  
   const handleClick2 = (event) => {
@@ -109,7 +110,7 @@ const Profile = () => {
         onClick={handleClick2}
       >
         <Avatar
-          src= {myImage}
+          src= {myImage || image}
           alt={'ProfileImg'}
           sx={{
             width: 35,
@@ -137,7 +138,7 @@ const Profile = () => {
       >
         <Typography variant="h5">User Profile</Typography>
         <Stack direction="row" py={3} spacing={2} alignItems="center">
-        <Avatar src={ myImage || '/images/profile/user-1.jpg' } alt={"ProfileImg"} sx={{ width: 95, height: 95 }} />
+        <Avatar src={ myImage || image || '/images/profile/user-1.jpg' } alt={"ProfileImg"} sx={{ width: 95, height: 95 }} />
           <Box>
             <Typography variant="subtitle2" color="textPrimary" fontWeight={600}>
               {user?.data?.name || "Joe Wilson"} 

@@ -8,6 +8,16 @@ import {
   IconStar,
   IconMoodSmile,
   IconAperture,
+  IconUsers,
+  IconLockSquare,
+  IconBook2,
+  IconHelpHexagon,
+  IconFilters,
+  IconReportSearch,
+  IconCategory,
+  IconCalendarCheck,
+  IconTag
+
 } from '@tabler/icons-react';
 
 const Menuitems = [
@@ -25,55 +35,55 @@ const Menuitems = [
   {
     id: uniqueId(),
     title: 'Users',
-    icon: IconAperture,
+    icon: IconUsers,
     href: '/users',
   },
    {
     id: uniqueId(),
     title: 'Privacy policies',
-    icon: IconAperture,
+    icon: IconLockSquare,
     href: '/privacy-policies',
   },
   {
     id: uniqueId(),
     title: 'Terms and Conditions',
-    icon: IconAperture,
+    icon: IconBook2,
     href: '/terms-conditions',
   },
   {
     id: uniqueId(),
     title: 'FAQ',
-    icon: IconAperture,
+    icon: IconHelpHexagon,
     href: '/faq',
   },
   {
     id: uniqueId(),
     title: 'Interests',
-    icon: IconAperture,
+    icon: IconFilters,
     href: '/interests',
   },
   {
     id: uniqueId(),
     title: 'Posts',
-    icon: IconAperture,
+    icon: IconReportSearch,
     href: '/posts',
   },
   {
     id: uniqueId(),
     title: 'Categories',
-    icon: IconAperture,
+    icon: IconCategory,
     href: '/categories',
   },
    {
     id: uniqueId(),
     title: 'Events',
-    icon: IconAperture,
+    icon: IconCalendarCheck,
     href: '/events',
   },
     {
     id: uniqueId(),
     title: 'Credits',
-    icon: IconAperture,
+    icon: IconTag,
     href: '/credits',
   }
   // {
