@@ -15,7 +15,7 @@ import DeleteIcon from '@mui/icons-material/Delete';
 import { CustomizerContext } from '@/app/context/customizerContext';
 
 
-const Createblog = () => {
+const Blogs = () => {
     const [interests, setInterests] = useState([]);
     const [postTitle, setpostTitle] = useState('');
     const [postContent, setpostContent] = useState('');
@@ -509,4 +509,4 @@ const Createblog = () => {
     );
 };
 
-export default Createblog;
+export default Blogs;
