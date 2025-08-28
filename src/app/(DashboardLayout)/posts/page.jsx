@@ -1,6 +1,6 @@
 
 import PageContainer from "@/app/components/container/PageContainer";
-import Posts from "@/app/components/shared/Posts";
+import Posts from "@/app/components/shared/posts";
 
 
 export default function SamplePage() {

@@ -15,25 +15,25 @@ import DeleteIcon from '@mui/icons-material/Delete';
 import { CustomizerContext } from '@/app/context/customizerContext';
 
 
-const CreatePost = () => {
+const Createpost = () => {
     const [interests, setInterests] = useState([]);
-    const [postTitle, setPostTitle] = useState('');
-    const [postContent, setPostContent] = useState('');
+    const [postTitle, setpostTitle] = useState('');
+    const [postContent, setpostContent] = useState('');
     const [selectedInterest, setSelectedInterest] = useState('');
     const [imageFile, setImageFile] = useState(null);
     const [message, setMessage] = useState('');
-    const [getPosts, setGetPosts] = useState(true);
-    const [posts, setPosts] = useState([]);
+    const [getposts, setGetposts] = useState(true);
+    const [posts, setposts] = useState([]);
     const [showAddModal, setShowAddModal] = useState(false);
     const [showUpdateModal, setShowUpdateModal] = useState(false);
-    const [currentPost, setCurrentPost] = useState(null);
+    const [currentpost, setCurrentpost] = useState(null);
     const [updateTitle, setUpdateTitle] = useState('');
     const [updateContent, setUpdateContent] = useState('');
     const [updateImageFile, setUpdateImageFile] = useState(null);
     const [isUpdating, setIsUpdating] = useState(false);
     const [page, setPage] = useState(0);
     const [rowsPerPage, setRowsPerPage] = useState(4);
-    const [viewPost, setViewPost] = useState(null); // for View functionality
+    const [viewpost, setViewpost] = useState(null); // for View functionality
     const [feedback, setFeedback] = useState({ message: '', success: true, open: false });
         const { activeMode } = useContext(CustomizerContext);
       
@@ -59,7 +59,7 @@ const CreatePost = () => {
     useEffect(() => {
         if (token) {
             fetchInterests();
-            fetchPosts();
+            fetchposts();
         }
     }, [token]);
 
@@ -76,13 +76,13 @@ const CreatePost = () => {
         }
     };
 
-    const fetchPosts = async () => {
+    const fetchposts = async () => {
         try {
-            const res = await axios.get(`${BASE_URL}/admin/blog/getAllPosts`, {
+            const res = await axios.get(`${BASE_URL}/admin/post/getAllPosts`, {
                 headers: { 'x-access-token': token },
             });
             if (res.data.success) {
-                setPosts(res.data.data);
+                setposts(res.data.data);
             }
         } catch (err) {
             console.error('Fetch error:', err);
@@ -103,7 +103,7 @@ const CreatePost = () => {
 
         try {
             const res = await axios.post(
-                `${BASE_URL}/admin/blog/createPost/${selectedInterest}`,
+                `${BASE_URL}/admin/post/createPost/${selectedInterest}`,
                 formData,
                 {
                     headers: {
@@ -114,14 +114,14 @@ const CreatePost = () => {
             );
 
             if (res.data.success) {
-                setMessage('✅ Post created successfully');
-                setPostTitle('');
-                setPostContent('');
+                setMessage('✅ post created successfully');
+                setpostTitle('');
+                setpostContent('');
                 setImageFile(null);
                 setSelectedInterest('');
                 setShowAddModal(false);
-                fetchPosts()
-      setFeedback({ message: 'Post created successfully!', success: true, open: true });
+                fetchposts()
+      setFeedback({ message: 'post created successfully!', success: true, open: true });
 
             } else {
                 setMessage('❌ Something went wrong');
@@ -142,9 +142,9 @@ const CreatePost = () => {
         }
     };
 
-    const handleUpdatePost = async (e) => {
+    const handleUpdatepost = async (e) => {
         e.preventDefault();
-        if (!currentPost?.id) return;
+        if (!currentpost?.id) return;
 
         const formData = new FormData();
         formData.append('postTitle', updateTitle);
@@ -154,7 +154,7 @@ const CreatePost = () => {
 
         try {
             const res = await axios.put(
-                `${BASE_URL}/admin/blog/updatePost/${currentPost.id}`,
+                `${BASE_URL}/admin/post/updatePost/${currentpost.id}`,
                 formData,
                 {
                     headers: {
@@ -164,15 +164,15 @@ const CreatePost = () => {
                 }
             );
             if (res.data.success) {
-                setMessage('✅ Post updated successfully');
+                setMessage('✅ post updated successfully');
                 setShowUpdateModal(false);
-                fetchPosts(); // refresh
-      setFeedback({ message: 'Post update successfully!', success: true, open: true });
+                fetchposts(); // refresh
+      setFeedback({ message: 'post update successfully!', success: true, open: true });
 
             } else {
                 setMessage(' Update failed');
                 setFeedback({
-        message: err?.response?.data?.message || 'Failed to update Post',
+        message: err?.response?.data?.message || 'Failed to update post',
         success: false,
         open: true,
       });
@@ -181,7 +181,7 @@ const CreatePost = () => {
             console.error(err);
             setMessage(' Update error');
             setFeedback({
-        message: err?.response?.data?.message || 'Failed to update Post',
+        message: err?.response?.data?.message || 'Failed to update post',
         success: false,
         open: true,
       });
@@ -190,17 +190,17 @@ const CreatePost = () => {
         }
     };
 
-    const handleDeletePost = async (postId) => {
+    const handleDeletepost = async (postId) => {
         if (!confirm('Are you sure you want to delete this post?')) return;
 
         try {
-            const res = await axios.delete(`${BASE_URL}/admin/blog/deletePost/${postId}`, {
+            const res = await axios.delete(`${BASE_URL}/admin/post/deletePost/${postId}`, {
                 headers: { 'x-access-token': token },
             });
             if (res.data.success) {
-                setMessage('🗑️ Post deleted');
-                fetchPosts(); // refresh
-      setFeedback({ message: 'Post deleted successfully!', success: true, open: true });
+                setMessage('🗑️ post deleted');
+                fetchposts(); // refresh
+      setFeedback({ message: 'post deleted successfully!', success: true, open: true });
 
             } else {
                 setMessage('❌ Delete failed');
@@ -225,13 +225,13 @@ const CreatePost = () => {
     return (
         <div style={{ maxWidth: 950, margin: 'auto' }}>
             <div style={{ display:'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 5 }}>
-                 <h1>User Posts</h1>
+                 <h1>User posts</h1>
 
             <button
                 onClick={() => setShowAddModal(true)}
                 className='addBtn'
             >
-                Create Post
+                Create post
             </button>
 
             </div>
@@ -256,13 +256,13 @@ const CreatePost = () => {
                         maxWidth: 600,
                         boxShadow: '0 5px 15px rgba(0,0,0,0.3)',
                     }}>
-                        <h2>Create Blog Post</h2>
+                        <h2>Create Post</h2>
                         <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: 15 }}>
                             <input
                                 type="text"
-                                placeholder="Post Title"
+                                placeholder="post Title"
                                 value={postTitle}
-                                onChange={(e) => setPostTitle(e.target.value)}
+                                onChange={(e) => setpostTitle(e.target.value)}
                                 required
                                 style={{
                                     padding: 10,
@@ -273,9 +273,9 @@ const CreatePost = () => {
                             />
 
                             <textarea
-                                placeholder="Post Content"
+                                placeholder="post Content"
                                 value={postContent}
-                                onChange={(e) => setPostContent(e.target.value)}
+                                onChange={(e) => setpostContent(e.target.value)}
                                 rows={6}
                                 required
                                 style={{
@@ -334,7 +334,7 @@ const CreatePost = () => {
                                         cursor: 'pointer',
                                     }}
                                 >
-                                    Create Post
+                                    Create post
                                 </button>
                             </div>
                         </form>
@@ -344,16 +344,16 @@ const CreatePost = () => {
                 </div>
             )}
 
-            {/* Posts display */}
-           {viewPost ? (
+            {/* posts display */}
+           {viewpost ? (
   <div  style={{ marginTop: 20, maxWidth: '800px', margin: 'auto', padding: 20, boxShadow: '0 2px 4px rgba(0,0,0,0.7)', borderRadius: 8 }}>
-    <h1>{viewPost.title}</h1>
-    <img src={viewPost.image} alt="Post" style={{ width: '100%', maxHeight: 300, objectFit: 'cover' }} />
-    <p>{viewPost.content}</p>
+    <h1>{viewpost.title}</h1>
+    <img src={viewpost.image} alt="post" style={{ width: '100%', maxHeight: 300, objectFit: 'cover' }} />
+    <p>{viewpost.content}</p>
     
     <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: 10 }}>
-     <p><strong>Interest:</strong> {viewPost.category?.name}</p>
-    <button className='canclenbtn' onClick={() => setViewPost(null)}>Back to Table</button>
+     <p><strong>Interest:</strong> {viewpost.category?.name}</p>
+    <button className='canclenbtn' onClick={() => setViewpost(null)}>Back to Table</button>
     </div>
   </div>
 ) : (
@@ -382,12 +382,12 @@ const CreatePost = () => {
               </TableCell>
               <TableCell>{post.category?.name}</TableCell>
               <TableCell align="right">
-                <IconButton onClick={() => setViewPost(post)} color="primary">
+                <IconButton onClick={() => setViewpost(post)} color="primary">
                   <VisibilityIcon />
                 </IconButton>
                 <IconButton
                   onClick={() => {
-                    setCurrentPost(post);
+                    setCurrentpost(post);
                     setUpdateTitle(post.title);
                     setUpdateContent(post.content);
                     setShowUpdateModal(true);
@@ -396,7 +396,7 @@ const CreatePost = () => {
                 >
                   <EditIcon />
                 </IconButton>
-                <IconButton onClick={() => handleDeletePost(post.id)} color="error">
+                <IconButton onClick={() => handleDeletepost(post.id)} color="error">
                   <DeleteIcon />
                 </IconButton>
               </TableCell>
@@ -419,7 +419,7 @@ const CreatePost = () => {
 
 
             {/* Update Modal */}
-            {showUpdateModal && currentPost && (
+            {showUpdateModal && currentpost && (
                 <div style={{
                     position: 'fixed', top: 0, left: 0, right: 0, bottom: 0,
                     backgroundColor: 'rgba(0,0,0,0.5)', display: 'flex',
@@ -429,8 +429,8 @@ const CreatePost = () => {
                         backgroundColor: backgroundColor, padding: 30, borderRadius: 8,
                         width: '90%', maxWidth: 600, boxShadow: '0 5px 15px rgba(0,0,0,0.3)',
                     }}>
-                        <h2>Update Post</h2>
-                        <form onSubmit={handleUpdatePost} style={{ display: 'flex', flexDirection: 'column', gap: 15 }}>
+                        <h2>Update post</h2>
+                        <form onSubmit={handleUpdatepost} style={{ display: 'flex', flexDirection: 'column', gap: 15 }}>
                             <input
                                 type="text"
                                 value={updateTitle}
@@ -486,7 +486,7 @@ const CreatePost = () => {
                                             height: 16,
                                             animation: 'spin 1s linear infinite',
                                         }} />
-                                    ) : 'Update Post'}
+                                    ) : 'Update post'}
                                 </button>
 
                             </div>
@@ -509,4 +509,4 @@ const CreatePost = () => {
     );
 };
 
-export default CreatePost;
+export default Createpost;

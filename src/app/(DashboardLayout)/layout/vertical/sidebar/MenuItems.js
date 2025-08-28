@@ -86,6 +86,13 @@ const Menuitems = [
     icon: IconTag,
     href: '/credits',
   }
+,
+ {
+    id: uniqueId(),
+    title: 'Blogs',
+    icon: IconTag,
+    href: '/blogs',
+  }
   // {
   //   id: uniqueId(),
   //   title: 'Sample ',
