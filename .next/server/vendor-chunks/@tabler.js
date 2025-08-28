@@ -311,6 +311,16 @@ eval("__webpack_require__.r(__webpack_exports__);\n/* harmony export */ __webpac
 
 /***/ }),
 
+/***/ "(ssr)/./node_modules/@tabler/icons-react/dist/esm/icons/IconStar.js":
+/*!*********************************************************************!*\
+  !*** ./node_modules/@tabler/icons-react/dist/esm/icons/IconStar.js ***!
+  \*********************************************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+eval("__webpack_require__.r(__webpack_exports__);\n/* harmony export */ __webpack_require__.d(__webpack_exports__, {\n/* harmony export */   \"default\": () => (/* binding */ IconStar)\n/* harmony export */ });\n/* harmony import */ var _createReactComponent_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../createReactComponent.js */ \"(ssr)/./node_modules/@tabler/icons-react/dist/esm/createReactComponent.js\");\n/**\n * @tabler/icons-react v2.47.0 - MIT\n */ \nvar IconStar = (0,_createReactComponent_js__WEBPACK_IMPORTED_MODULE_0__[\"default\"])(\"star\", \"IconStar\", [\n    [\n        \"path\",\n        {\n            d: \"M12 17.75l-6.172 3.245l1.179 -6.873l-5 -4.867l6.9 -1l3.086 -6.253l3.086 6.253l6.9 1l-5 4.867l1.179 6.873z\",\n            key: \"svg-0\"\n        }\n    ]\n]);\n //# sourceMappingURL=IconStar.js.map\n//# sourceURL=[module]\n//# sourceMappingURL=data:application/json;charset=utf-8;base64,eyJ2ZXJzaW9uIjozLCJmaWxlIjoiKHNzcikvLi9ub2RlX21vZHVsZXMvQHRhYmxlci9pY29ucy1yZWFjdC9kaXN0L2VzbS9pY29ucy9JY29uU3Rhci5qcyIsIm1hcHBpbmdzIjoiOzs7Ozs7OztBQUNBLElBQUFBLFdBQWVDLG9FQUFvQkEsQ0FBQyxRQUFRLFlBQVk7SUFDdEQ7UUFDRTtRQUNBO1lBQ0VDLEdBQUc7WUFDSEMsS0FBSztRQUNQO0tBQ0Y7Q0FDRCIsInNvdXJjZXMiOlsid2VicGFjazovL3N0YXJ0ZXJraXQvLi4vLi4vLi4vc3JjL2ljb25zL0ljb25TdGFyLmpzPzYxMjUiXSwic291cmNlc0NvbnRlbnQiOlsiaW1wb3J0IGNyZWF0ZVJlYWN0Q29tcG9uZW50IGZyb20gJy4uL2NyZWF0ZVJlYWN0Q29tcG9uZW50JztcbmV4cG9ydCBkZWZhdWx0IGNyZWF0ZVJlYWN0Q29tcG9uZW50KCdzdGFyJywgJ0ljb25TdGFyJywgW1xuICBbXG4gICAgJ3BhdGgnLFxuICAgIHtcbiAgICAgIGQ6ICdNMTIgMTcuNzVsLTYuMTcyIDMuMjQ1bDEuMTc5IC02Ljg3M2wtNSAtNC44NjdsNi45IC0xbDMuMDg2IC02LjI1M2wzLjA4NiA2LjI1M2w2LjkgMWwtNSA0Ljg2N2wxLjE3OSA2Ljg3M3onLFxuICAgICAga2V5OiAnc3ZnLTAnLFxuICAgIH0sXG4gIF0sXG5dKTtcbiJdLCJuYW1lcyI6WyJJY29uU3RhciIsImNyZWF0ZVJlYWN0Q29tcG9uZW50IiwiZCIsImtleSJdLCJzb3VyY2VSb290IjoiIn0=\n//# sourceURL=webpack-internal:///(ssr)/./node_modules/@tabler/icons-react/dist/esm/icons/IconStar.js\n");
+
+/***/ }),
+
 /***/ "(ssr)/./node_modules/@tabler/icons-react/dist/esm/icons/IconTag.js":
 /*!********************************************************************!*\
   !*** ./node_modules/@tabler/icons-react/dist/esm/icons/IconTag.js ***!

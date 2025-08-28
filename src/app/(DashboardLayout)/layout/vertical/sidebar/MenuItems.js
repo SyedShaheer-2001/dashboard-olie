@@ -90,7 +90,7 @@ const Menuitems = [
  {
     id: uniqueId(),
     title: 'Blogs',
-    icon: IconTag,
+    icon: IconStar,
     href: '/blogs',
   }
   // {
