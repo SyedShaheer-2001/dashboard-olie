@@ -256,7 +256,7 @@ const Blogs = () => {
                         maxWidth: 600,
                         boxShadow: '0 5px 15px rgba(0,0,0,0.3)',
                     }}>
-                        <h2>Create Blog blog</h2>
+                        <h2>Create Blog</h2>
                         <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: 15 }}>
                             <input
                                 type="text"
