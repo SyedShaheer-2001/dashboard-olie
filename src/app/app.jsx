@@ -1,5 +1,5 @@
 "use client";
-import React, { useContext, useEffect } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import { useRouter, usePathname } from "next/navigation";
 import { ThemeProvider } from "@mui/material/styles";
 import CssBaseline from "@mui/material/CssBaseline";
@@ -16,15 +16,25 @@ const MyApp = ({ children }) => {
   const { activeDir } = useContext(CustomizerContext);
   const router = useRouter();
   const pathname = usePathname();
+  const [loading, setLoading] = useState(true); // State for loading
 
   useEffect(() => {
     const user = typeof window !== 'undefined' ? JSON.parse(sessionStorage.getItem('user')) : null;
     const isLoginPage = pathname.startsWith('/auth/auth1/login');
 
     if (!user && !isLoginPage) {
-      router.replace('/auth/auth1/login');
+      setLoading(true); // Start loading
+      setTimeout(() => {
+        router.replace('/auth/auth1/login');
+      }, 1000); // Delay the redirect by 1 second
+    } else {
+      setLoading(false); // Stop loading if user is found or on login page
     }
   }, [pathname, router]);
+
+  if (loading) {
+    return <div>Loading...</div>; // Show loading screen or spinner
+  }
 
   return (
     <AppRouterCacheProvider options={{ enableCssLayer: true }}>

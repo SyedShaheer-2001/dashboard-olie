@@ -32,21 +32,6 @@
       "static/chunks/main-app.js",
       "static/chunks/app/auth/auth1/login/page.js"
     ],
-    "/(DashboardLayout)/events/page": [
-      "static/chunks/webpack.js",
-      "static/chunks/main-app.js",
-      "static/chunks/app/(DashboardLayout)/events/page.js"
-    ],
-    "/(DashboardLayout)/blogs/page": [
-      "static/chunks/webpack.js",
-      "static/chunks/main-app.js",
-      "static/chunks/app/(DashboardLayout)/blogs/page.js"
-    ],
-    "/(DashboardLayout)/credits/page": [
-      "static/chunks/webpack.js",
-      "static/chunks/main-app.js",
-      "static/chunks/app/(DashboardLayout)/credits/page.js"
-    ],
     "/(DashboardLayout)/users/page": [
       "static/chunks/webpack.js",
       "static/chunks/main-app.js",
@@ -57,12 +42,6 @@
       "static/chunks/main-app.js",
       "static/css/app/(DashboardLayout)/privacy-policies/page.css",
       "static/chunks/app/(DashboardLayout)/privacy-policies/page.js"
-    ],
-    "/(DashboardLayout)/terms-conditions/page": [
-      "static/chunks/webpack.js",
-      "static/chunks/main-app.js",
-      "static/css/app/(DashboardLayout)/terms-conditions/page.css",
-      "static/chunks/app/(DashboardLayout)/terms-conditions/page.js"
     ]
   }
 }
