@@ -1,8 +1,8 @@
-// File: C:\Users\DELL\Desktop\dashboard-olie\src\app\(DashboardLayout)\privacy-policies\page.jsx
-import * as entry from '../../../../../src/app/(DashboardLayout)/privacy-policies/page.js'
+// File: C:\Users\DELL\Desktop\dashboard-olie\src\app\(DashboardLayout)\credits\page.jsx
+import * as entry from '../../../../../src/app/(DashboardLayout)/credits/page.js'
 import type { ResolvingMetadata, ResolvingViewport } from 'next/dist/lib/metadata/types/metadata-interface.js'
 
-type TEntry = typeof import('../../../../../src/app/(DashboardLayout)/privacy-policies/page.js')
+type TEntry = typeof import('../../../../../src/app/(DashboardLayout)/credits/page.js')
 
 // Check that the entry is a valid entry
 checkFields<Diff<{
