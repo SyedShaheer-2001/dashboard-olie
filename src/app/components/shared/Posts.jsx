@@ -7,13 +7,15 @@ import {
   Table, TableBody, TableCell, TableContainer, TableHead, TableRow,
   Paper, TablePagination, IconButton,
   Snackbar,
-  Alert
+  Alert,
+  Box
 } from '@mui/material';
 import VisibilityIcon from '@mui/icons-material/Visibility';
 import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
 import { CustomizerContext } from '@/app/context/customizerContext';
-
+import FlagIcon from '@mui/icons-material/Flag';
+import {  Typography } from '@mui/material';
 
 const Posts = () => {
     const [interests, setInterests] = useState([]);
@@ -364,6 +366,7 @@ const Posts = () => {
           <TableCell>Title</TableCell>
           <TableCell>Image</TableCell>
           <TableCell>Interest</TableCell>
+          <TableCell></TableCell>
           <TableCell align="right">Actions</TableCell>
         </TableRow>
       </TableHead>
@@ -381,6 +384,19 @@ const Posts = () => {
                 />
               </TableCell>
               <TableCell>{post.category?.name}</TableCell>
+
+              <TableCell>
+                                            {post.isReport ? (
+                                                <Box sx={{ display: 'inline-flex', alignItems: 'center', gap: 0.75 }}>
+                                                    <FlagIcon fontSize="small" sx={{ color: 'error.main' }} />
+                                                    <Typography variant="body2" sx={{ color: 'error.main', fontWeight: 600 }}>
+                                                        Reported
+                                                    </Typography>
+                                                </Box>
+                                            ) : null}
+                                        </TableCell>
+
+
               <TableCell align="right">
                 <IconButton onClick={() => setViewpost(post)} color="primary">
                   <VisibilityIcon />

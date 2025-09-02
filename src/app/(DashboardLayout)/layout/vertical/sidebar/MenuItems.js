@@ -15,6 +15,7 @@ import {
   IconFilters,
   IconReportSearch,
   IconCategory,
+    IconFileText, 
   IconCalendarCheck,
   IconTag
 
@@ -90,7 +91,7 @@ const Menuitems = [
  {
     id: uniqueId(),
     title: 'Blogs',
-    icon: IconStar,
+    icon: IconFileText,
     href: '/blogs',
   }
   // {

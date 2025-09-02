@@ -24,7 +24,7 @@ const Users = () => {
   const [searchTerm, setSearchTerm] = useState('');
 
   const filteredUsers = allUsers.filter((user) =>
-    user.firstName.toLowerCase().includes(searchTerm.toLowerCase())
+    user?.firstName?.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
    const [user , setUser] = useState();

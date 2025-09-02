@@ -364,7 +364,7 @@ const Blogs = () => {
           <TableCell>Title</TableCell>
           <TableCell>Image</TableCell>
           <TableCell>Interest</TableCell>
-          <TableCell align="right">Actions</TableCell>
+          <TableCell align="center">Actions</TableCell>
         </TableRow>
       </TableHead>
       <TableBody>
