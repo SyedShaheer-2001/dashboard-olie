@@ -1,5 +1,4 @@
 'use client';
-import React from 'react'
 import React, { useEffect, useState, useContext } from "react";
 import axios from "axios";
 import BASE_URL from '@/utils/api';
@@ -19,8 +18,8 @@ function Feedback() {
       console.log('token' , token)
             const { activeMode } = useContext(CustomizerContext);
             
-              const backgroundColor = activeMode === 'dark' ? '#1e1e2f' : '#ffffff';
-              const textColor = activeMode === 'dark' ? '#ffffff' : '#000000';
+            const backgroundColor = activeMode === 'dark' ? '#1e1e2f' : '#ffffff';
+            const textColor = activeMode === 'dark' ? '#ffffff' : '#000000';
     
       useEffect(() => {
       if (token) {
