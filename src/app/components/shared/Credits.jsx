@@ -192,7 +192,7 @@ const buttonStyle = (bgColor) => ({
 
   return (
     <div style={{ padding: 20, maxWidth: 700, margin: 'auto' }}>
-      <h1>Credits</h1>
+      <h1>Make a plan</h1>
 
       <div style={{ display: 'flex', marginBottom: 20 }}>
         <div style={{ position: 'relative', flex: 1, marginRight: 10 }}>

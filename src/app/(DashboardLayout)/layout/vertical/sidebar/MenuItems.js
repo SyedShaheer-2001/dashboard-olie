@@ -94,6 +94,13 @@ const Menuitems = [
     icon: IconFileText,
     href: '/blogs',
   }
+  ,
+ {
+    id: uniqueId(),
+    title: 'Feedback',
+    icon: IconFileText,
+    href: '/feedback',
+  }
   // {
   //   id: uniqueId(),
   //   title: 'Sample ',

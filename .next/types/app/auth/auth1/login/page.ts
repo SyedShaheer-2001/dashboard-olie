@@ -1,4 +1,4 @@
-// File: C:\Users\DELL\Desktop\dashboard-olie\src\app\auth\auth1\login\page.jsx
+// File: C:\Users\DELL\Desktop\Olie-dashboard\src\app\auth\auth1\login\page.jsx
 import * as entry from '../../../../../../src/app/auth/auth1/login/page.js'
 import type { ResolvingMetadata, ResolvingViewport } from 'next/dist/lib/metadata/types/metadata-interface.js'
 

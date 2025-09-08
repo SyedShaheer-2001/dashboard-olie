@@ -1,4 +1,4 @@
-// File: C:\Users\DELL\Desktop\dashboard-olie\src\app\(DashboardLayout)\page.jsx
+// File: C:\Users\DELL\Desktop\Olie-dashboard\src\app\(DashboardLayout)\page.jsx
 import * as entry from '../../../../src/app/(DashboardLayout)/page.js'
 import type { ResolvingMetadata, ResolvingViewport } from 'next/dist/lib/metadata/types/metadata-interface.js'
 
