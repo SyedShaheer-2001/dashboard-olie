@@ -1,5 +1,21 @@
 {
   "pages": {
+    "/auth/auth1/login/page": [
+      "static/chunks/webpack.js",
+      "static/chunks/main-app.js",
+      "static/chunks/app/auth/auth1/login/page.js"
+    ],
+    "/layout": [
+      "static/chunks/webpack.js",
+      "static/chunks/main-app.js",
+      "static/css/app/layout.css",
+      "static/chunks/app/layout.js"
+    ],
+    "/loading": [
+      "static/chunks/webpack.js",
+      "static/chunks/main-app.js",
+      "static/chunks/app/loading.js"
+    ],
     "/(DashboardLayout)/page": [
       "static/chunks/webpack.js",
       "static/chunks/main-app.js",
@@ -16,21 +32,30 @@
       "static/chunks/main-app.js",
       "static/chunks/app/(DashboardLayout)/loading.js"
     ],
-    "/layout": [
+    "/(DashboardLayout)/feedback/page": [
       "static/chunks/webpack.js",
       "static/chunks/main-app.js",
-      "static/css/app/layout.css",
-      "static/chunks/app/layout.js"
+      "static/chunks/app/(DashboardLayout)/feedback/page.js"
     ],
-    "/loading": [
+    "/(DashboardLayout)/blogs/page": [
       "static/chunks/webpack.js",
       "static/chunks/main-app.js",
-      "static/chunks/app/loading.js"
+      "static/chunks/app/(DashboardLayout)/blogs/page.js"
     ],
-    "/auth/auth1/login/page": [
+    "/(DashboardLayout)/users/page": [
       "static/chunks/webpack.js",
       "static/chunks/main-app.js",
-      "static/chunks/app/auth/auth1/login/page.js"
+      "static/chunks/app/(DashboardLayout)/users/page.js"
+    ],
+    "/(DashboardLayout)/events/page": [
+      "static/chunks/webpack.js",
+      "static/chunks/main-app.js",
+      "static/chunks/app/(DashboardLayout)/events/page.js"
+    ],
+    "/(DashboardLayout)/credits/page": [
+      "static/chunks/webpack.js",
+      "static/chunks/main-app.js",
+      "static/chunks/app/(DashboardLayout)/credits/page.js"
     ]
   }
 }

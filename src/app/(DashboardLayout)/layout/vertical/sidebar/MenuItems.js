@@ -98,7 +98,7 @@ const Menuitems = [
  {
     id: uniqueId(),
     title: 'Feedback',
-    icon: IconFileText,
+    icon: IconPoint,
     href: '/feedback',
   }
   // {
