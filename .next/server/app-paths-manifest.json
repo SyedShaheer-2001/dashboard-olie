@@ -1,7 +1,4 @@
 {
-  "/(DashboardLayout)/page": "app/(DashboardLayout)/page.js",
-  "/(DashboardLayout)/feedback/page": "app/(DashboardLayout)/feedback/page.js",
-  "/(DashboardLayout)/blogs/page": "app/(DashboardLayout)/blogs/page.js",
-  "/(DashboardLayout)/users/page": "app/(DashboardLayout)/users/page.js",
-  "/(DashboardLayout)/credits/page": "app/(DashboardLayout)/credits/page.js"
+  "/auth/auth1/login/page": "app/auth/auth1/login/page.js",
+  "/(DashboardLayout)/page": "app/(DashboardLayout)/page.js"
 }

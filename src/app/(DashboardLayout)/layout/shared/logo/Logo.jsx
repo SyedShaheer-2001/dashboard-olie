@@ -24,18 +24,20 @@ const Logo = () => {
       <LinkStyled href="/">
         {activeMode === "dark" ? (
           <Image
-            src="/images/logos/light-logo.svg"
+          style={{marginTop:'15px'}}
+            src="/images/logos/Ollie-logo.png"
             alt="logo"
-            height={TopbarHeight}
-            width={174}
+            height={TopbarHeight-30}
+            width={40}
             priority
           />
         ) : (
           <Image
-            src={"/images/logos/dark-logo.svg"}
+          style={{marginTop:'15px'}}
+            src={"/images/logos/Ollie-logo.png"}
             alt="logo"
-            height={TopbarHeight}
-            width={174}
+            height={TopbarHeight-30}
+            width={40}
             priority
           />
         )}
