@@ -1,512 +1,783 @@
 'use client';
-import React, { useEffect, useState , useContext} from 'react';
+import React, { useEffect, useState, useContext } from 'react';
 import axios from 'axios';
 import BASE_URL from '@/utils/api';
-import CircularProgress from '@mui/material/CircularProgress';
 import {
-  Table, TableBody, TableCell, TableContainer, TableHead, TableRow,
-  Paper, TablePagination, IconButton,
+  Box,
+  Paper,
+  Stack,
+  Typography,
+  Button,
+  TextField,
+  InputAdornment,
+  Table,
+  TableBody,
+  TableCell,
+  TableContainer,
+  TableHead,
+  TableRow,
+  TablePagination,
+  IconButton,
   Snackbar,
-  Alert
+  Alert,
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogActions,
+  MenuItem,
+  CircularProgress,
+  Chip,
 } from '@mui/material';
+import SearchIcon from '@mui/icons-material/Search';
+import AddIcon from '@mui/icons-material/Add';
 import VisibilityIcon from '@mui/icons-material/Visibility';
 import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
 import { CustomizerContext } from '@/app/context/customizerContext';
 
-
 const Blogs = () => {
-    const [interests, setInterests] = useState([]);
-    const [postTitle, setpostTitle] = useState('');
-    const [postContent, setpostContent] = useState('');
-    const [selectedInterest, setSelectedInterest] = useState('');
-    const [imageFile, setImageFile] = useState(null);
-    const [message, setMessage] = useState('');
-    const [getblogs, setGetblogs] = useState(true);
-    const [blogs, setblogs] = useState([]);
-    const [showAddModal, setShowAddModal] = useState(false);
-    const [showUpdateModal, setShowUpdateModal] = useState(false);
-    const [currentblog, setCurrentblog] = useState(null);
-    const [updateTitle, setUpdateTitle] = useState('');
-    const [updateContent, setUpdateContent] = useState('');
-    const [updateImageFile, setUpdateImageFile] = useState(null);
-    const [isUpdating, setIsUpdating] = useState(false);
-    const [page, setPage] = useState(0);
-    const [rowsPerPage, setRowsPerPage] = useState(4);
-    const [viewblog, setViewblog] = useState(null); // for View functionality
-    const [feedback, setFeedback] = useState({ message: '', success: true, open: false });
-        const { activeMode } = useContext(CustomizerContext);
-      
-        const backgroundColor = activeMode === 'dark' ? '#1e1e2f' : '#ffffff';
-        const textColor = activeMode === 'dark' ? '#ffffff' : '#000000';
+  const [interests, setInterests] = useState([]);
+  const [blogs, setBlogs] = useState([]);
+  const [token, setToken] = useState('');
+  const [loading, setLoading] = useState(true);
+  const [submitting, setSubmitting] = useState(false);
 
-    const handleChangePage = (event, newPage) => {
-        setPage(newPage);
-    };
+  const [searchTerm, setSearchTerm] = useState('');
+  const [page, setPage] = useState(0);
+  const [rowsPerPage, setRowsPerPage] = useState(5);
 
-    const handleChangeRowsPerPage = (event) => {
-        setRowsPerPage(+event.target.value);
-        setPage(0);
-    };
+  const [formDialogOpen, setFormDialogOpen] = useState(false);
+  const [viewDialogOpen, setViewDialogOpen] = useState(false);
+  const [formMode, setFormMode] = useState('create');
+  const [currentBlog, setCurrentBlog] = useState(null);
+  const [viewBlog, setViewBlog] = useState(null);
 
-    const [user , setUser] = useState();
-      useEffect(() => {
-        const USER = typeof window !== 'undefined' ? JSON.parse(sessionStorage.getItem('user')) : null;
-        setUser(USER);
-      }, []);
-    const token = user?.data?.adminToken;
+  const [title, setTitle] = useState('');
+  const [content, setContent] = useState('');
+  const [selectedInterest, setSelectedInterest] = useState('');
+  const [imageFile, setImageFile] = useState(null);
+  const [imagePreview, setImagePreview] = useState('');
 
-    useEffect(() => {
-        if (token) {
-            fetchInterests();
-            fetchblogs();
-        }
-    }, [token]);
+  const [errors, setErrors] = useState({
+    title: '',
+    content: '',
+    selectedInterest: '',
+    image: '',
+  });
 
-    const fetchInterests = async () => {
-        try {
-            const res = await axios.get(`${BASE_URL}/admin/interest/getUserInterest`, {
-                headers: { 'x-access-token': token },
-            });
-            if (res.data.success) {
-                setInterests(res.data.data);
-            }
-        } catch (err) {
-            console.error('Fetch error:', err);
-        }
-    };
+  const [feedback, setFeedback] = useState({
+    message: '',
+    success: true,
+    open: false,
+  });
 
-    const fetchblogs = async () => {
-        try {
-            const res = await axios.get(`${BASE_URL}/admin/blog/getAllBlogs`, {
-                headers: { 'x-access-token': token },
-            });
-            if (res.data.success) {
-                setblogs(res.data.data);
-            }
-        } catch (err) {
-            console.error('Fetch error:', err);
-        }
-    };
+  const { activeMode } = useContext(CustomizerContext);
+  const isDark = activeMode === 'dark';
 
-    const handleSubmit = async (e) => {
-        e.preventDefault();
-        if (!selectedInterest || !postTitle || !postContent || !imageFile) {
-            setMessage('Please fill out all fields.');
-            return;
-        }
+  useEffect(() => {
+    try {
+      const storedUser =
+        typeof window !== 'undefined'
+          ? JSON.parse(sessionStorage.getItem('user') || 'null')
+          : null;
 
-        const formData = new FormData();
-        formData.append('postTitle', postTitle);
-        formData.append('postContent', postContent);
-        formData.append('image', imageFile);
+      setToken(storedUser?.data?.adminToken || '');
+    } catch (error) {
+      console.error('Session parse error:', error);
+    }
+  }, []);
 
-        try {
-            const res = await axios.post(
-                `${BASE_URL}/admin/blog/createBlog/${selectedInterest}`,
-                formData,
-                {
-                    headers: {
-                        'x-access-token': token,
-                        'Content-Type': 'multipart/form-data',
-                    },
-                }
-            );
+  useEffect(() => {
+    if (token) {
+      fetchInterests();
+      fetchBlogs();
+    }
+  }, [token]);
 
-            if (res.data.success) {
-                setMessage('✅ blog created successfully');
-                setpostTitle('');
-                setpostContent('');
-                setImageFile(null);
-                setSelectedInterest('');
-                setShowAddModal(false);
-                fetchblogs()
-      setFeedback({ message: 'blog created successfully!', success: true, open: true });
+  const fetchInterests = async () => {
+    try {
+      const res = await axios.get(`${BASE_URL}/admin/interest/getUserInterest`, {
+        headers: { 'x-access-token': token },
+      });
 
-            } else {
-                setMessage('❌ Something went wrong');
-                setFeedback({
-        message: err?.response?.data?.message || 'Failed to create blog',
+      if (res.data.success) {
+        setInterests(res.data.data || []);
+      }
+    } catch (error) {
+      console.error('Failed to fetch interests:', error);
+      setFeedback({
+        message: 'Failed to fetch interests',
         success: false,
         open: true,
       });
-            }
-        } catch (err) {
-            console.error(err);
-            setMessage('❌ Submission failed');
-            setFeedback({
-        message: err?.response?.data?.message || 'Failed to create blog',
+    }
+  };
+
+  const fetchBlogs = async () => {
+    try {
+      setLoading(true);
+      const res = await axios.get(`${BASE_URL}/admin/blog/getAllBlogs`, {
+        headers: { 'x-access-token': token },
+      });
+
+      if (res.data.success) {
+        setBlogs(res.data.data || []);
+      }
+    } catch (error) {
+      console.error('Failed to fetch blogs:', error);
+      setFeedback({
+        message: 'Failed to fetch blogs',
         success: false,
         open: true,
       });
-        }
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const clearImagePreview = () => {
+    if (imagePreview && imagePreview.startsWith('blob:')) {
+      URL.revokeObjectURL(imagePreview);
+    }
+  };
+
+  const resetForm = () => {
+    clearImagePreview();
+    setTitle('');
+    setContent('');
+    setSelectedInterest('');
+    setImageFile(null);
+    setImagePreview('');
+    setCurrentBlog(null);
+    setErrors({
+      title: '',
+      content: '',
+      selectedInterest: '',
+      image: '',
+    });
+  };
+
+  const openCreateDialog = () => {
+    resetForm();
+    setFormMode('create');
+    setFormDialogOpen(true);
+  };
+
+  const openEditDialog = (blog) => {
+    resetForm();
+    setFormMode('edit');
+    setCurrentBlog(blog);
+    setTitle(blog.title || '');
+    setContent(blog.content || '');
+    setImagePreview(blog.image || '');
+    setFormDialogOpen(true);
+  };
+
+  const closeFormDialog = () => {
+    setFormDialogOpen(false);
+    setSubmitting(false);
+    resetForm();
+  };
+
+  const openViewDialog = (blog) => {
+    setViewBlog(blog);
+    setViewDialogOpen(true);
+  };
+
+  const closeViewDialog = () => {
+    setViewDialogOpen(false);
+    setViewBlog(null);
+  };
+
+  const handleImageChange = (e) => {
+    const file = e.target.files?.[0];
+
+    if (!file) {
+      setImageFile(null);
+      if (formMode === 'create') {
+        clearImagePreview();
+        setImagePreview('');
+      }
+      return;
+    }
+
+    if (!file.type.startsWith('image/')) {
+      setErrors((prev) => ({ ...prev, image: 'Please select a valid image file' }));
+      return;
+    }
+
+    if (file.size > 5 * 1024 * 1024) {
+      setErrors((prev) => ({ ...prev, image: 'Image must be under 5MB' }));
+      return;
+    }
+
+    clearImagePreview();
+    const previewUrl = URL.createObjectURL(file);
+
+    setImageFile(file);
+    setImagePreview(previewUrl);
+    setErrors((prev) => ({ ...prev, image: '' }));
+  };
+
+  const validateForm = () => {
+    const nextErrors = {
+      title: '',
+      content: '',
+      selectedInterest: '',
+      image: '',
     };
 
-    const handleUpdateblog = async (e) => {
-        e.preventDefault();
-        if (!currentblog?.id) return;
+    if (!title.trim()) {
+      nextErrors.title = 'Title is required';
+    } else if (title.trim().length < 3) {
+      nextErrors.title = 'Title must be at least 3 characters';
+    }
 
-        const formData = new FormData();
-        formData.append('postTitle', updateTitle);
-        formData.append('postContent', updateContent);
-        if (updateImageFile) formData.append('image', updateImageFile);
-        setIsUpdating(true);
+    if (!content.trim()) {
+      nextErrors.content = 'Content is required';
+    } else if (content.trim().length < 10) {
+      nextErrors.content = 'Content must be at least 10 characters';
+    }
 
-        try {
-            const res = await axios.put(
-                `${BASE_URL}/admin/blog/updateBlog/${currentblog.id}`,
-                formData,
-                {
-                    headers: {
-                        'x-access-token': token,
-                        'Content-Type': 'multipart/form-data',
-                    },
-                }
-            );
-            if (res.data.success) {
-                setMessage('✅ blog updated successfully');
-                setShowUpdateModal(false);
-                fetchblogs(); // refresh
-      setFeedback({ message: 'blog update successfully!', success: true, open: true });
+    if (formMode === 'create' && !selectedInterest) {
+      nextErrors.selectedInterest = 'Interest is required';
+    }
 
-            } else {
-                setMessage(' Update failed');
-                setFeedback({
-        message: err?.response?.data?.message || 'Failed to update blog',
-        success: false,
-        open: true,
-      });
-            }
-        } catch (err) {
-            console.error(err);
-            setMessage(' Update error');
-            setFeedback({
-        message: err?.response?.data?.message || 'Failed to update blog',
-        success: false,
-        open: true,
-      });
-        } finally {
-            setIsUpdating(false);
+    if (formMode === 'create' && !imageFile) {
+      nextErrors.image = 'Image is required';
+    }
+
+    setErrors(nextErrors);
+    return !Object.values(nextErrors).some(Boolean);
+  };
+
+  const handleCreateBlog = async (e) => {
+    e.preventDefault();
+    if (!validateForm()) return;
+
+    const formData = new FormData();
+    formData.append('postTitle', title.trim());
+    formData.append('postContent', content.trim());
+    formData.append('image', imageFile);
+
+    try {
+      setSubmitting(true);
+
+      const res = await axios.post(
+        `${BASE_URL}/admin/blog/createBlog/${selectedInterest}`,
+        formData,
+        {
+          headers: {
+            'x-access-token': token,
+            'Content-Type': 'multipart/form-data',
+          },
         }
-    };
+      );
 
-    const handleDeleteblog = async (blogId) => {
-        if (!confirm('Are you sure you want to delete this blog?')) return;
-
-        try {
-            const res = await axios.delete(`${BASE_URL}/admin/blog/deleteBlog/${blogId}`, {
-                headers: { 'x-access-token': token },
-            });
-            if (res.data.success) {
-                setMessage('🗑️ blog deleted');
-                fetchblogs(); // refresh
-      setFeedback({ message: 'blog deleted successfully!', success: true, open: true });
-
-            } else {
-                setMessage('❌ Delete failed');
-                setFeedback({
-        message: err?.response?.data?.message || 'Failed to delete blog',
+      if (res.data.success) {
+        closeFormDialog();
+        fetchBlogs();
+        setFeedback({
+          message: 'Blog created successfully!',
+          success: true,
+          open: true,
+        });
+      } else {
+        setFeedback({
+          message: 'Failed to create blog',
+          success: false,
+          open: true,
+        });
+      }
+    } catch (error) {
+      console.error('Create blog error:', error);
+      setFeedback({
+        message: error?.response?.data?.message || 'Failed to create blog',
         success: false,
         open: true,
       });
-            }
-        } catch (err) {
-            console.error(err);
-            setMessage('❌ Delete error');
-            setFeedback({
-        message: err?.response?.data?.message || 'Failed to delete blog',
-        success: false,
-        open: true,
-      });
+    } finally {
+      setSubmitting(false);
+    }
+  };
+
+  const handleUpdateBlog = async (e) => {
+    e.preventDefault();
+    if (!validateForm()) return;
+    if (!currentBlog?.id) return;
+
+    const formData = new FormData();
+    formData.append('postTitle', title.trim());
+    formData.append('postContent', content.trim());
+
+    if (imageFile) {
+      formData.append('image', imageFile);
+    }
+
+    try {
+      setSubmitting(true);
+
+      const res = await axios.put(
+        `${BASE_URL}/admin/blog/updateBlog/${currentBlog.id}`,
+        formData,
+        {
+          headers: {
+            'x-access-token': token,
+            'Content-Type': 'multipart/form-data',
+          },
         }
-    };
+      );
 
+      if (res.data.success) {
+        closeFormDialog();
+        fetchBlogs();
+        setFeedback({
+          message: 'Blog updated successfully!',
+          success: true,
+          open: true,
+        });
+      } else {
+        setFeedback({
+          message: 'Failed to update blog',
+          success: false,
+          open: true,
+        });
+      }
+    } catch (error) {
+      console.error('Update blog error:', error);
+      setFeedback({
+        message: error?.response?.data?.message || 'Failed to update blog',
+        success: false,
+        open: true,
+      });
+    } finally {
+      setSubmitting(false);
+    }
+  };
 
+  const handleDeleteBlog = async (blogId) => {
+    if (!confirm('Are you sure you want to delete this blog?')) return;
+
+    try {
+      const res = await axios.delete(`${BASE_URL}/admin/blog/deleteBlog/${blogId}`, {
+        headers: { 'x-access-token': token },
+      });
+
+      if (res.data.success) {
+        fetchBlogs();
+        setFeedback({
+          message: 'Blog deleted successfully!',
+          success: true,
+          open: true,
+        });
+      } else {
+        setFeedback({
+          message: 'Failed to delete blog',
+          success: false,
+          open: true,
+        });
+      }
+    } catch (error) {
+      console.error('Delete blog error:', error);
+      setFeedback({
+        message: error?.response?.data?.message || 'Failed to delete blog',
+        success: false,
+        open: true,
+      });
+    }
+  };
+
+  const filteredBlogs = blogs.filter((blog) => {
+    const keyword = searchTerm.toLowerCase();
     return (
-        <div style={{ maxWidth: 950, margin: 'auto' }}>
-            <div style={{ display:'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 5 }}>
-                 <h1>User blogs</h1>
-
-            <button
-                onClick={() => setShowAddModal(true)}
-                className='addBtn'
-            >
-                Create blog
-            </button>
-
-            </div>
-           
-
-            {/* Modal */}
-            {showAddModal && (
-                <div style={{
-                    position: 'fixed',
-                    top: 0, left: 0, right: 0, bottom: 0,
-                    backgroundColor: 'rgba(0, 0, 0, 0.5)',
-                    display: 'flex',
-                    justifyContent: 'center',
-                    alignItems: 'center',
-                    zIndex: 999,
-                }}>
-                    <div style={{
-                        backgroundColor: backgroundColor,
-                        padding: 30,
-                        borderRadius: 8,
-                        width: '90%',
-                        maxWidth: 600,
-                        boxShadow: '0 5px 15px rgba(0,0,0,0.3)',
-                    }}>
-                        <h2>Create Blog</h2>
-                        <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: 15 }}>
-                            <input
-                                type="text"
-                                placeholder="blog Title"
-                                value={postTitle}
-                                onChange={(e) => setpostTitle(e.target.value)}
-                                required
-                                style={{
-                                    padding: 10,
-                                    borderRadius: 4,
-                                    border: '1px solid #ccc',
-                                    boxShadow: '0 2px 4px rgba(0,0,0,0.1)',
-                                }}
-                            />
-
-                            <textarea
-                                placeholder="blog Content"
-                                value={postContent}
-                                onChange={(e) => setpostContent(e.target.value)}
-                                rows={6}
-                                required
-                                style={{
-                                    padding: 10,
-                                    borderRadius: 4,
-                                    border: '1px solid #ccc',
-                                    resize: 'vertical',
-                                    boxShadow: '0 2px 4px rgba(0,0,0,0.1)',
-                                }}
-                            />
-
-                            <input
-                                type="file"
-                                accept="image/*"
-                                onChange={(e) => setImageFile(e.target.files[0])}
-                                required
-                            />
-
-                            <select
-                                value={selectedInterest}
-                                onChange={(e) => setSelectedInterest(e.target.value)}
-                                required
-                                style={{ padding: 10, borderRadius: 4, border: '1px solid #ccc' }}
-                            >
-                                <option value="">Select an Interest</option>
-                                {interests.map((interest) => (
-                                    <option key={interest.id} value={interest.id}>
-                                        {interest.name}
-                                    </option>
-                                ))}
-                            </select>
-
-                            <div style={{ display: 'flex', justifyContent: 'flex-end', gap: 10 }}>
-                                <button
-                                    type="button"
-                                    onClick={() => setShowAddModal(false)}
-                                    style={{
-                                        padding: '10px 16px',
-                                        backgroundColor: '#ccc',
-                                        border: 'none',
-                                        borderRadius: 4,
-                                        cursor: 'pointer',
-                                    }}
-                                >
-                                    Cancel
-                                </button>
-
-                                <button
-                                    type="submit"
-                                    style={{
-                                        backgroundColor: 'green',
-                                        color: 'white',
-                                        padding: '10px 16px',
-                                        border: 'none',
-                                        borderRadius: 4,
-                                        cursor: 'pointer',
-                                    }}
-                                >
-                                    Create blog
-                                </button>
-                            </div>
-                        </form>
-
-                        {/* {message && <p style={{ marginTop: 20 }}>{message}</p>} */}
-                    </div>
-                </div>
-            )}
-
-            {/* blogs display */}
-           {viewblog ? (
-  <div  style={{ marginTop: 20, maxWidth: '800px', margin: 'auto', padding: 20, boxShadow: '0 2px 4px rgba(0,0,0,0.7)', borderRadius: 8 }}>
-    <h1>{viewblog.title}</h1>
-    <img src={viewblog.image} alt="blog" style={{ width: '100%', maxHeight: 300, objectFit: 'cover' }} />
-    <p>{viewblog.content}</p>
-    
-    <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: 10 }}>
-     <p><strong>Interest:</strong> {viewblog.category?.name}</p>
-    <button className='canclenbtn' onClick={() => setViewblog(null)}>Back to Table</button>
-    </div>
-  </div>
-) : (
-  <TableContainer component={Paper}  sx={{ mt: 2, maxWidth:'950px', margin: 'auto' , boxShadow: '0 2px 4px rgba(0,0,0,0.7)'}}>
-    <Table>
-      <TableHead>
-        <TableRow>
-          <TableCell>Title</TableCell>
-          <TableCell>Image</TableCell>
-          <TableCell>Interest</TableCell>
-          <TableCell align="center">Actions</TableCell>
-        </TableRow>
-      </TableHead>
-      <TableBody>
-        {blogs
-          .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
-          .map((blog) => (
-            <TableRow key={blog.id}>
-              <TableCell>{blog.title}</TableCell>
-              <TableCell>
-                <img
-                  src={blog.image}
-                  alt="thumbnail"
-                  style={{ width: 80, height: 50, objectFit: 'cover', borderRadius: 4 }}
-                />
-              </TableCell>
-              <TableCell>{blog.category?.name}</TableCell>
-              <TableCell align="right">
-                <IconButton onClick={() => setViewblog(blog)} color="primary">
-                  <VisibilityIcon />
-                </IconButton>
-                <IconButton
-                  onClick={() => {
-                    setCurrentblog(blog);
-                    setUpdateTitle(blog.title);
-                    setUpdateContent(blog.content);
-                    setShowUpdateModal(true);
-                  }}
-                  color="secondary"
-                >
-                  <EditIcon />
-                </IconButton>
-                <IconButton onClick={() => handleDeleteblog(blog.id)} color="error">
-                  <DeleteIcon />
-                </IconButton>
-              </TableCell>
-            </TableRow>
-          ))}
-      </TableBody>
-    </Table>
-    <TablePagination
-      component="div"
-      count={blogs.length}
-      page={page}
-      onPageChange={handleChangePage}
-      rowsPerPage={rowsPerPage}
-      rowsPerPageOptions={[4, 10, 15,20,50,100]}
-      onRowsPerPageChange={handleChangeRowsPerPage}
-    />
-  </TableContainer>
-)}
-
-
-
-            {/* Update Modal */}
-            {showUpdateModal && currentblog && (
-                <div style={{
-                    position: 'fixed', top: 0, left: 0, right: 0, bottom: 0,
-                    backgroundColor: 'rgba(0,0,0,0.5)', display: 'flex',
-                    justifyContent: 'center', alignItems: 'center', zIndex: 999,
-                }}>
-                    <div style={{
-                        backgroundColor: backgroundColor, padding: 30, borderRadius: 8,
-                        width: '90%', maxWidth: 600, boxShadow: '0 5px 15px rgba(0,0,0,0.3)',
-                    }}>
-                        <h2>Update blog</h2>
-                        <form onSubmit={handleUpdateblog} style={{ display: 'flex', flexDirection: 'column', gap: 15 }}>
-                            <input
-                                type="text"
-                                value={updateTitle}
-                                onChange={(e) => setUpdateTitle(e.target.value)}
-                                placeholder="Title"
-                                required
-                                style={{ padding: 10, borderRadius: 4, border: '1px solid #ccc' }}
-                            />
-                            <textarea
-                                rows={6}
-                                value={updateContent}
-                                onChange={(e) => setUpdateContent(e.target.value)}
-                                placeholder="Content"
-                                required
-                                style={{ padding: 10, borderRadius: 4, border: '1px solid #ccc' }}
-                            />
-                            <input
-                                type="file"
-                                accept="image/*"
-                                onChange={(e) => setUpdateImageFile(e.target.files[0])}
-                            />
-                            <div style={{ display: 'flex', justifyContent: 'flex-end', gap: 10 }}>
-                                <button
-                                    type="button"
-                                    onClick={() => setShowUpdateModal(false)}
-                                    style={{ padding: '10px 16px', backgroundColor: '#ccc', borderRadius: 4, border: 'none', cursor: 'pointer', }}
-                                >
-                                    Cancel
-                                </button>
-                                <button
-                                    type="submit"
-                                    className="updateBtn"
-                                    disabled={isUpdating}
-                                    style={{
-                                        padding: '10px 16px',
-                                        backgroundColor: isUpdating ? '#999999' : '#007bff',
-                                        color: 'white',
-                                        borderRadius: 4,
-                                        border: 'none',
-                                        cursor: isUpdating ? 'not-allowed' : 'pointer',
-                                        display: 'flex',
-                                        alignItems: 'center',
-                                        justifyContent: 'center',
-                                        gap: 8,
-                                    }}
-                                >
-                                    {isUpdating ? (
-                                        <span style={{
-                                            border: '3px solid #f3f3f3',
-                                            borderTop: '3px solid white',
-                                            borderRadius: '50%',
-                                            width: 16,
-                                            height: 16,
-                                            animation: 'spin 1s linear infinite',
-                                        }} />
-                                    ) : 'Update blog'}
-                                </button>
-
-                            </div>
-                        </form>
-                    </div>
-                </div>
-            )}
-              <Snackbar
-                          open={feedback.open}
-                          autoHideDuration={3000}
-                          onClose={() => setFeedback({ ...feedback, open: false })}
-                          anchorOrigin={{ vertical: 'top', horizontal: 'center' }}
-                        >
-                          <Alert severity={feedback.success ? 'success' : 'error'}>
-                            {feedback.message}
-                          </Alert>
-                        </Snackbar>
-
-        </div>
+      blog.title?.toLowerCase().includes(keyword) ||
+      blog.category?.name?.toLowerCase().includes(keyword)
     );
+  });
+
+  const paginatedBlogs = filteredBlogs.slice(
+    page * rowsPerPage,
+    page * rowsPerPage + rowsPerPage
+  );
+
+  const handleChangePage = (_, newPage) => {
+    setPage(newPage);
+  };
+
+  const handleChangeRowsPerPage = (event) => {
+    setRowsPerPage(parseInt(event.target.value, 10));
+    setPage(0);
+  };
+
+  return (
+    <Box sx={{ p: { xs: 2, md: 3 }, maxWidth: 1100, mx: 'auto' }}>
+      <Paper
+        sx={{
+          p: { xs: 2, md: 3 },
+          borderRadius: 3,
+          border: '1px solid',
+          borderColor: isDark ? 'rgba(255,255,255,0.08)' : '#e5e7eb',
+          backgroundColor: isDark ? '#1e1e2f' : '#fff',
+          color: isDark ? '#fff' : '#111827',
+          boxShadow: isDark ? 'none' : '0 10px 30px rgba(0,0,0,0.06)',
+        }}
+      >
+        <Stack
+          direction={{ xs: 'column', sm: 'row' }}
+          justifyContent="space-between"
+          alignItems={{ xs: 'flex-start', sm: 'center' }}
+          spacing={2}
+          sx={{ mb: 3 }}
+        >
+          <Box>
+            <Typography variant="h5" sx={{ fontWeight: 700, mb: 0.5 }}>
+              User Blogs
+            </Typography>
+            <Typography variant="body2" sx={{ color: isDark ? '#cbd5e1' : '#6b7280' }}>
+              Manage blogs, images, and linked interests.
+            </Typography>
+          </Box>
+
+          <Button
+            variant="contained"
+            startIcon={<AddIcon />}
+            onClick={openCreateDialog}
+            sx={{
+              textTransform: 'none',
+              borderRadius: 2,
+              px: 2,
+              py: 1,
+              boxShadow: 'none',
+            }}
+          >
+            Create Blog
+          </Button>
+        </Stack>
+
+        <Box sx={{ mb: 2 }}>
+          <TextField
+            fullWidth
+            size="small"
+            placeholder="Search by title or interest..."
+            value={searchTerm}
+            onChange={(e) => {
+              setSearchTerm(e.target.value);
+              setPage(0);
+            }}
+            InputProps={{
+              startAdornment: (
+                <InputAdornment position="start">
+                  <SearchIcon sx={{ fontSize: 20, color: 'text.secondary' }} />
+                </InputAdornment>
+              ),
+            }}
+            sx={{
+              '& .MuiOutlinedInput-root': {
+                borderRadius: 2,
+                backgroundColor: isDark ? '#25253a' : '#fafafa',
+              },
+            }}
+          />
+        </Box>
+
+        <TableContainer
+          sx={{
+            border: '1px solid',
+            borderColor: isDark ? 'rgba(255,255,255,0.08)' : '#e5e7eb',
+            borderRadius: 2,
+            overflow: 'hidden',
+          }}
+        >
+          <Table>
+            <TableHead>
+              <TableRow sx={{ backgroundColor: isDark ? '#25253a' : '#f8fafc' }}>
+                <TableCell sx={{ fontWeight: 700, width: 80 }}>S.No</TableCell>
+                <TableCell sx={{ fontWeight: 700 }}>Title</TableCell>
+                <TableCell sx={{ fontWeight: 700, width: 110 }}>Image</TableCell>
+                <TableCell sx={{ fontWeight: 700 }}>Interest</TableCell>
+                <TableCell sx={{ fontWeight: 700, width: 120 }}>Status</TableCell>
+                <TableCell sx={{ fontWeight: 700 }} align="right">
+                  Actions
+                </TableCell>
+              </TableRow>
+            </TableHead>
+
+            <TableBody>
+              {paginatedBlogs.length > 0 ? (
+                paginatedBlogs.map((blog, index) => (
+                  <TableRow key={blog.id} hover>
+                    <TableCell>{page * rowsPerPage + index + 1}</TableCell>
+                    <TableCell>{blog.title}</TableCell>
+                    <TableCell>
+                      {blog.image ? (
+                        <Box
+                          component="img"
+                          src={blog.image}
+                          alt={blog.title}
+                          sx={{
+                            width: 72,
+                            height: 48,
+                            objectFit: 'cover',
+                            borderRadius: 1.5,
+                            border: '1px solid',
+                            borderColor: isDark ? 'rgba(255,255,255,0.08)' : '#e5e7eb',
+                          }}
+                        />
+                      ) : (
+                        '-'
+                      )}
+                    </TableCell>
+                    <TableCell>{blog.category?.name || '-'}</TableCell>
+                    <TableCell>
+                      <Chip size="small" label="Active" color="success" variant="outlined" />
+                    </TableCell>
+                    <TableCell align="right">
+                      <IconButton
+                        onClick={() => openViewDialog(blog)}
+                        color="primary"
+                        size="small"
+                      >
+                        <VisibilityIcon fontSize="small" />
+                      </IconButton>
+                      <IconButton
+                        onClick={() => openEditDialog(blog)}
+                        color="secondary"
+                        size="small"
+                      >
+                        <EditIcon fontSize="small" />
+                      </IconButton>
+                      <IconButton
+                        onClick={() => handleDeleteBlog(blog.id)}
+                        color="error"
+                        size="small"
+                      >
+                        <DeleteIcon fontSize="small" />
+                      </IconButton>
+                    </TableCell>
+                  </TableRow>
+                ))
+              ) : (
+                <TableRow>
+                  <TableCell colSpan={6} align="center" sx={{ py: 5 }}>
+                    <Typography
+                      variant="body2"
+                      sx={{ color: isDark ? '#cbd5e1' : '#6b7280' }}
+                    >
+                      {loading ? 'Loading blogs...' : 'No blogs found.'}
+                    </Typography>
+                  </TableCell>
+                </TableRow>
+              )}
+            </TableBody>
+          </Table>
+
+          <TablePagination
+            component="div"
+            count={filteredBlogs.length}
+            page={page}
+            onPageChange={handleChangePage}
+            rowsPerPage={rowsPerPage}
+            onRowsPerPageChange={handleChangeRowsPerPage}
+            rowsPerPageOptions={[5, 10, 20, 50]}
+            sx={{
+              borderTop: '1px solid',
+              borderColor: isDark ? 'rgba(255,255,255,0.08)' : '#e5e7eb',
+              '& .MuiTablePagination-toolbar': {
+                px: 2,
+              },
+            }}
+          />
+        </TableContainer>
+      </Paper>
+
+      <Dialog open={formDialogOpen} onClose={closeFormDialog} fullWidth maxWidth="sm">
+        <form onSubmit={formMode === 'create' ? handleCreateBlog : handleUpdateBlog}>
+          <DialogTitle sx={{ fontWeight: 700 }}>
+            {formMode === 'create' ? 'Create Blog' : 'Edit Blog'}
+          </DialogTitle>
+
+          <DialogContent>
+            <TextField
+              fullWidth
+              autoFocus
+              size="small"
+              label="Title"
+              margin="dense"
+              value={title}
+              onChange={(e) => {
+                setTitle(e.target.value);
+                if (errors.title) setErrors((prev) => ({ ...prev, title: '' }));
+              }}
+              error={!!errors.title}
+              helperText={errors.title || ' '}
+            />
+
+            <TextField
+              fullWidth
+              size="small"
+              multiline
+              minRows={4}
+              label="Content"
+              margin="dense"
+              value={content}
+              onChange={(e) => {
+                setContent(e.target.value);
+                if (errors.content) setErrors((prev) => ({ ...prev, content: '' }));
+              }}
+              error={!!errors.content}
+              helperText={errors.content || ' '}
+            />
+
+            {formMode === 'create' ? (
+              <TextField
+                select
+                fullWidth
+                size="small"
+                label="Interest"
+                margin="dense"
+                value={selectedInterest}
+                onChange={(e) => {
+                  setSelectedInterest(e.target.value);
+                  if (errors.selectedInterest) {
+                    setErrors((prev) => ({ ...prev, selectedInterest: '' }));
+                  }
+                }}
+                error={!!errors.selectedInterest}
+                helperText={errors.selectedInterest || ' '}
+              >
+                <MenuItem value="">Select Interest</MenuItem>
+                {interests.map((interest) => (
+                  <MenuItem key={interest.id} value={interest.id}>
+                    {interest.name}
+                  </MenuItem>
+                ))}
+              </TextField>
+            ) : (
+              <TextField
+                fullWidth
+                size="small"
+                label="Interest"
+                margin="dense"
+                value={currentBlog?.category?.name || ''}
+                disabled
+                helperText="Interest is read-only in edit mode"
+              />
+            )}
+
+            <Box sx={{ mt: 1 }}>
+              <Button variant="outlined" component="label" sx={{ textTransform: 'none' }}>
+                {formMode === 'create' ? 'Upload Image' : 'Change Image'}
+                <input hidden type="file" accept="image/*" onChange={handleImageChange} />
+              </Button>
+
+              {errors.image && (
+                <Typography variant="caption" color="error" sx={{ display: 'block', mt: 1 }}>
+                  {errors.image}
+                </Typography>
+              )}
+
+              {imagePreview && (
+                <Box
+                  component="img"
+                  src={imagePreview}
+                  alt="Preview"
+                  sx={{
+                    mt: 2,
+                    width: '100%',
+                    maxHeight: 220,
+                    objectFit: 'cover',
+                    borderRadius: 2,
+                    border: '1px solid',
+                    borderColor: isDark ? 'rgba(255,255,255,0.08)' : '#e5e7eb',
+                  }}
+                />
+              )}
+            </Box>
+          </DialogContent>
+
+          <DialogActions sx={{ px: 3, pb: 2 }}>
+            <Button
+              onClick={closeFormDialog}
+              color="inherit"
+              disabled={submitting}
+              sx={{ textTransform: 'none' }}
+            >
+              Cancel
+            </Button>
+            <Button
+              type="submit"
+              variant="contained"
+              disabled={submitting}
+              sx={{ textTransform: 'none', boxShadow: 'none', minWidth: 130 }}
+            >
+              {submitting ? (
+                <CircularProgress size={20} color="inherit" />
+              ) : formMode === 'create' ? (
+                'Create Blog'
+              ) : (
+                'Save Changes'
+              )}
+            </Button>
+          </DialogActions>
+        </form>
+      </Dialog>
+
+      <Dialog open={viewDialogOpen} onClose={closeViewDialog} fullWidth maxWidth="md">
+        <DialogTitle sx={{ fontWeight: 700 }}>{viewBlog?.title}</DialogTitle>
+
+        <DialogContent>
+          {viewBlog?.image && (
+            <Box
+              component="img"
+              src={viewBlog.image}
+              alt={viewBlog.title}
+              sx={{
+                width: '100%',
+                maxHeight: 320,
+                objectFit: 'cover',
+                borderRadius: 2,
+                mb: 2,
+              }}
+            />
+          )}
+
+          <Stack direction="row" spacing={1} sx={{ mb: 2, flexWrap: 'wrap' }}>
+            <Chip
+              size="small"
+              label={`Interest: ${viewBlog?.category?.name || '-'}`}
+              variant="outlined"
+            />
+            <Chip size="small" label="Active" color="success" variant="outlined" />
+          </Stack>
+
+          <Typography variant="body1" sx={{ whiteSpace: 'pre-wrap', lineHeight: 1.8 }}>
+            {viewBlog?.content}
+          </Typography>
+        </DialogContent>
+
+        <DialogActions sx={{ px: 3, pb: 2 }}>
+          <Button onClick={closeViewDialog} sx={{ textTransform: 'none' }}>
+            Close
+          </Button>
+        </DialogActions>
+      </Dialog>
+
+      <Snackbar
+        open={feedback.open}
+        autoHideDuration={3000}
+        onClose={() => setFeedback({ ...feedback, open: false })}
+        anchorOrigin={{ vertical: 'top', horizontal: 'center' }}
+      >
+        <Alert
+          onClose={() => setFeedback({ ...feedback, open: false })}
+          severity={feedback.success ? 'success' : 'error'}
+          variant="filled"
+        >
+          {feedback.message}
+        </Alert>
+      </Snackbar>
+    </Box>
+  );
 };
 
 export default Blogs;

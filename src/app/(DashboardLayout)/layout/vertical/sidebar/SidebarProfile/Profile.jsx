@@ -41,7 +41,7 @@ export const Profile = () => {
           {/* <Avatar alt="Remy Sharp" src={myImage} sx={{ height: 40, width: 40 }} /> */}
 
           <Box>
-            <Typography variant="h6">{user?.data?.name || "Wilson"} </Typography>
+            <Typography variant="h6">{user?.data?.name || "Admin"} </Typography>
             <Typography variant="caption">{user?.data?.userType}</Typography>
           </Box>
           <Box sx={{ ml: 'auto' }}>

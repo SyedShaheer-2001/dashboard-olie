@@ -22,6 +22,28 @@ const DarkThemeColors = [
     },
   },
   {
+  name: 'YELLOW_THEME',
+  palette: {
+    primary: {
+      main: '#FED269',
+      light: '#5A4A22',
+      dark: '#D4AA42',
+      contrastText: '#ffffff',
+    },
+    secondary: {
+      main: '#FED269',
+      light: '#4A3D1D',
+      dark: '#D4AA42',
+      contrastText: '#ffffff',
+    },
+    background: {
+      default: '#2A241A',
+      dark: '#241F17',
+      paper: '#2A241A',
+    },
+  },
+},
+  {
     name: 'AQUA_THEME',
     palette: {
       primary: {

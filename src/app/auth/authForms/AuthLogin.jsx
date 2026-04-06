@@ -1,117 +1,111 @@
 'use client'
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
-import Divider from '@mui/material/Divider';
-import FormControlLabel from '@mui/material/FormControlLabel';
-import FormGroup from '@mui/material/FormGroup';
 import Stack from '@mui/material/Stack';
 import Typography from '@mui/material/Typography';
-import Link from "next/link";
-import CustomCheckbox from "@/app/components/forms/theme-elements/CustomCheckbox";
 import CustomTextField from "@/app/components/forms/theme-elements/CustomTextField";
 import CustomFormLabel from "@/app/components/forms/theme-elements/CustomFormLabel";
-import AuthSocialButtons from "./AuthSocialButtons";
 import React, {useState} from 'react';
-import axios from 'axios';
 import { useRouter } from 'next/navigation';
-import BASE_URL from '@/utils/api'; 
-
+import BASE_URL from '@/utils/api';
+import axios from 'axios';
 
 const AuthLogin = ({ title, subtitle, subtext }) => {
-const [email, setUsername] = useState('');
-const [password, setPassword] = useState('');
-const [loading, setLoading] = useState(false);
-const [message, setMessage] = useState('');
-
-const router = useRouter();
-
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [loading, setLoading] = useState(false);
+  const [message, setMessage] = useState('');
+  const router = useRouter();
 
 
 const handleLogin = async () => {
   try {
-    setLoading(true)
+    setLoading(true);
+
     const response = await axios.post(`${BASE_URL}/admin/auth/adminLogin`, {
       email,
       password,
     });
 
     if (response.status === 200) {
-      console.log('Login successful:', response.data);
-      router.push('/'); 
-       sessionStorage.setItem('user', JSON.stringify(response.data));
+      console.log("Login successful:", response.data);
+
+      // ✅ Save session
+      sessionStorage.setItem("user", JSON.stringify(response.data));
+
+      router.push("/");
     }
   } catch (error) {
     if (error.response) {
-      console.error('Login failed:', error.response.data.message);
-      setMessage(error.response.data.message || 'Login failed. Please try again.');
+      setMessage(error.response.data.message || "Login failed. Please try again.");
     } else {
-      console.error('Network/API error:', error);
-      setMessage(error.response.data.message || 'Login failed. Please try again.');
+      setMessage("Network error. Please check your connection and try again.");
     }
-  }finally{
-      setLoading(false)
-    }
+  } finally {
+    setLoading(false);
+  }
 };
+console.log( 'main console',JSON.parse(sessionStorage.getItem("user")));
 
-
+ 
   return (
-    <>
-    {title ? (
-      <Typography fontWeight="700" variant="h3" mb={1}>
-        {title}
-      </Typography>
-    ) : null}
+  <>
+    <div style={{textAlign:'center'}}>
+      {title && (
+        <Typography fontWeight="700" variant="h2" mb={1}>
+          {title}
+        </Typography>
+      )}
 
-    {subtext}
+      {subtext}
 
-    <Stack>
-      <Box>
-        <CustomFormLabel htmlFor="username">Username</CustomFormLabel>
-        <CustomTextField 
-        id="username" 
-        variant="outlined"
-         fullWidth
-         value={email}
-  onChange={(e) => setUsername(e.target.value)}
-         />
-      </Box>
-      <Box>
-        <CustomFormLabel htmlFor="password">Password</CustomFormLabel>
-        <CustomTextField
-          id="password"
-          type="password"
-          variant="outlined"
-          fullWidth
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
-         />
-      </Box>
-      <Stack
-        justifyContent="space-between"
-        direction="row"
-        alignItems="center"
-        my={2}
-      >
-         {message && <p style={{ marginTop: 5, color:'red' }}>{message}</p>}
-        
-        
+    </div>
+      
+
+      <Stack spacing={1}>
+        <Box>
+          <CustomFormLabel htmlFor="email">Email</CustomFormLabel>
+          <CustomTextField
+            id="email"
+            variant="outlined"
+            fullWidth
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+          />
+        </Box>
+
+        <Box>
+          <CustomFormLabel htmlFor="password">Password</CustomFormLabel>
+          <CustomTextField
+            id="password"
+            type="password"
+            variant="outlined"
+            fullWidth
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+          />
+        </Box>
+
+        {message && (
+          <Typography color="error" variant="body2" sx={{ mt: 1 }}>
+            {message}
+          </Typography>
+        )}
       </Stack>
-    </Stack>
-    <Box>
-      <Button
-        color="primary"
-        variant="contained"
-        size="large"
-        fullWidth
-        type="submit"
-  onClick={handleLogin}
-  disabled={loading}
-      >
-        Sign In
-      </Button>
-    </Box> 
-  </>
 
+      <Box mt={4}>
+        <Button
+          color="primary"
+          variant="contained"
+          size="large"
+          fullWidth
+          onClick={handleLogin}
+          disabled={loading}
+        >
+          {loading ? 'Signing In...' : 'Sign In'}
+        </Button>
+      </Box>
+    </>
   )
   
 };

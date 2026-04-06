@@ -17,6 +17,23 @@ const LightThemeColors = [
     },
   },
   {
+  name: 'YELLOW_THEME',
+  palette: {
+    primary: {
+      main: '#FED269',
+      light: '#FFF4E2',
+      dark: '#E5B94F',
+      contrastText: '#ffffff',
+    },
+    secondary: {
+      main: '#FED269',
+      light: '#FFF4E2',
+      dark: '#E5B94F',
+      contrastText: '#ffffff',
+    },
+  },
+},
+  {
     name: 'AQUA_THEME',
     palette: {
       primary: {

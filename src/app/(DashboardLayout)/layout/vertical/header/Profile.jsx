@@ -141,10 +141,7 @@ const Profile = () => {
         <Avatar src={ myImage || image || '/images/profile/user-1.jpg' } alt={"ProfileImg"} sx={{ width: 95, height: 95 }} />
           <Box>
             <Typography variant="subtitle2" color="textPrimary" fontWeight={600}>
-              {user?.data?.name || "Joe Wilson"} 
-            </Typography>
-            <Typography variant="subtitle2" color="textSecondary">
-              {user?.data?.userType}
+              {user?.data?.name || "Admin"} 
             </Typography>
             <Typography
               variant="subtitle2"

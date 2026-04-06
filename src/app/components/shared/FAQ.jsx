@@ -1,305 +1,608 @@
 'use client';
-import React, { useEffect, useState, useContext } from "react";
-import axios from "axios";
+import React, { useEffect, useState, useContext } from 'react';
+import axios from 'axios';
 import BASE_URL from '@/utils/api';
-import { Alert, Snackbar } from "@mui/material";
+import {
+  Box,
+  Paper,
+  Stack,
+  Typography,
+  Button,
+  TextField,
+  InputAdornment,
+  Table,
+  TableBody,
+  TableCell,
+  TableContainer,
+  TableHead,
+  TableRow,
+  TablePagination,
+  IconButton,
+  Snackbar,
+  Alert,
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogActions,
+  Checkbox,
+  FormControlLabel,
+  Divider,
+} from '@mui/material';
+import SearchIcon from '@mui/icons-material/Search';
+import AddIcon from '@mui/icons-material/Add';
+import EditIcon from '@mui/icons-material/Edit';
+import DeleteIcon from '@mui/icons-material/Delete';
+import RemoveCircleOutlineIcon from '@mui/icons-material/RemoveCircleOutline';
 import { CustomizerContext } from '@/app/context/customizerContext';
 
 const FAQ = () => {
   const [faqs, setFaqs] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [showForm, setShowForm] = useState(false);
-  const [question, setQuestion] = useState("");
-  const [options, setOptions] = useState([{ text: "", isCorrect: false }]);
-  const [message, setMessage] = useState("");
+  const [submitting, setSubmitting] = useState(false);
+  const [token, setToken] = useState('');
+
+  const [searchTerm, setSearchTerm] = useState('');
+  const [dialogOpen, setDialogOpen] = useState(false);
   const [editId, setEditId] = useState(null);
-  const [feedback, setFeedback] = useState({ message: '', success: true, open: false });
-  const [user , setUser] = useState();
-  const [token , setToken] = useState(null);
-    useEffect(() => {
-      const USER = typeof window !== 'undefined' ? JSON.parse(sessionStorage.getItem('user')) : null;
-      setUser(USER);
-      setToken(USER?.data?.adminToken || null);
-    }, []);
-  // const token = user?.data?.adminToken;
-  console.log('token' , token)
-        const { activeMode } = useContext(CustomizerContext);
-        
-          const backgroundColor = activeMode === 'dark' ? '#1e1e2f' : '#ffffff';
-          const textColor = activeMode === 'dark' ? '#ffffff' : '#000000';
+
+  const [question, setQuestion] = useState('');
+  const [options, setOptions] = useState([
+    { text: '', isCorrect: false },
+    { text: '', isCorrect: false },
+  ]);
+
+  const [questionError, setQuestionError] = useState('');
+  const [optionsError, setOptionsError] = useState('');
+
+  const [page, setPage] = useState(0);
+  const [rowsPerPage, setRowsPerPage] = useState(5);
+
+  const [feedback, setFeedback] = useState({
+    message: '',
+    success: true,
+    open: false,
+  });
+
+  const { activeMode } = useContext(CustomizerContext);
+  const isDark = activeMode === 'dark';
 
   useEffect(() => {
-  if (token) {
-    fetchFaqs();
-  }
-}, [token]);
+    try {
+      const storedUser =
+        typeof window !== 'undefined'
+          ? JSON.parse(sessionStorage.getItem('user') || 'null')
+          : null;
+
+      setToken(storedUser?.data?.adminToken || '');
+    } catch (error) {
+      console.error('Session parse error:', error);
+    }
+  }, []);
+
+  useEffect(() => {
+    if (token) {
+      fetchFaqs();
+    }
+  }, [token]);
 
   const fetchFaqs = async () => {
     try {
+      setLoading(true);
       const res = await axios.get(`${BASE_URL}/admin/content/showFaqs`, {
         headers: { 'x-access-token': token },
       });
+
       if (res.data.success) {
-        setFaqs(res.data.data);
+        setFaqs(res.data.data || []);
       }
     } catch (error) {
-      console.error("Failed to fetch FAQs:", error);
+      console.error('Failed to fetch FAQs:', error);
+      setFeedback({
+        message: 'Failed to fetch FAQs',
+        success: false,
+        open: true,
+      });
     } finally {
       setLoading(false);
     }
   };
 
-  const handleOptionChange = (index, field, value) => {
-    const updatedOptions = [...options];
-    if (field === "isCorrect") {
-      updatedOptions.forEach((opt, i) => {
-        updatedOptions[i].isCorrect = i === index;
-      });
-    } else {
-      updatedOptions[index][field] = value;
+  const resetForm = () => {
+    setQuestion('');
+    setOptions([
+      { text: '', isCorrect: false },
+      { text: '', isCorrect: false },
+    ]);
+    setEditId(null);
+    setQuestionError('');
+    setOptionsError('');
+  };
+
+  const openAddDialog = () => {
+    resetForm();
+    setDialogOpen(true);
+  };
+
+  const openEditDialog = (faq) => {
+    setQuestion(faq.question || '');
+    setOptions(
+      faq.Option?.length
+        ? faq.Option.map((opt) => ({
+            text: opt.text || '',
+            isCorrect: !!opt.isCorrect,
+          }))
+        : [
+            { text: '', isCorrect: false },
+            { text: '', isCorrect: false },
+          ]
+    );
+    setEditId(faq.id);
+    setQuestionError('');
+    setOptionsError('');
+    setDialogOpen(true);
+  };
+
+  const closeDialog = () => {
+    setDialogOpen(false);
+    resetForm();
+    setSubmitting(false);
+  };
+
+  const handleOptionTextChange = (index, value) => {
+    const updated = [...options];
+    updated[index].text = value;
+    setOptions(updated);
+
+    if (optionsError) {
+      setOptionsError('');
     }
-    setOptions(updatedOptions);
+  };
+
+  const handleCorrectChange = (index) => {
+    const updated = options.map((opt, i) => ({
+      ...opt,
+      isCorrect: i === index,
+    }));
+    setOptions(updated);
+
+    if (optionsError) {
+      setOptionsError('');
+    }
   };
 
   const addOption = () => {
-    setOptions([...options, { text: "", isCorrect: false }]);
+    setOptions((prev) => [...prev, { text: '', isCorrect: false }]);
   };
 
   const removeOption = (index) => {
-    const updatedOptions = options.filter((_, i) => i !== index);
-    setOptions(updatedOptions);
+    if (options.length <= 2) return;
+    const updated = options.filter((_, i) => i !== index);
+    setOptions(updated);
+
+    if (optionsError) {
+      setOptionsError('');
+    }
   };
 
-  const resetForm = () => {
-    setQuestion("");
-    setOptions([{ text: "", isCorrect: false }]);
-    setEditId(null);
+  const validateForm = () => {
+    const trimmedQuestion = question.trim();
+
+    if (!trimmedQuestion) {
+      setQuestionError('Question is required');
+      return false;
+    }
+
+    if (trimmedQuestion.length < 5) {
+      setQuestionError('Question must be at least 5 characters');
+      return false;
+    }
+
+    setQuestionError('');
+
+    const cleanedOptions = options.map((opt) => ({
+      ...opt,
+      text: opt.text.trim(),
+    }));
+
+    if (cleanedOptions.length < 2) {
+      setOptionsError('At least 2 options are required');
+      return false;
+    }
+
+    const hasEmptyOption = cleanedOptions.some((opt) => !opt.text);
+    if (hasEmptyOption) {
+      setOptionsError('All options are required');
+      return false;
+    }
+
+    const uniqueTexts = new Set(cleanedOptions.map((opt) => opt.text.toLowerCase()));
+    if (uniqueTexts.size !== cleanedOptions.length) {
+      setOptionsError('Options must be unique');
+      return false;
+    }
+
+    const correctCount = cleanedOptions.filter((opt) => opt.isCorrect).length;
+    if (correctCount !== 1) {
+      setOptionsError('Select exactly 1 correct option');
+      return false;
+    }
+
+    setOptionsError('');
+    return true;
   };
 
   const handleCreateOrUpdate = async (e) => {
     e.preventDefault();
+
+    if (!validateForm()) return;
+
+    const payload = {
+      question: question.trim(),
+      options: options.map((opt) => ({
+        text: opt.text.trim(),
+        isCorrect: opt.isCorrect,
+      })),
+    };
+
     try {
+      setSubmitting(true);
+
       if (editId) {
-        await axios.put(`${BASE_URL}/admin/content/updateFaqs/${editId}`, {
-          question,
-          options,
-        }, {
+        await axios.put(`${BASE_URL}/admin/content/updateFaqs/${editId}`, payload, {
           headers: {
             'x-access-token': token,
             'Content-Type': 'application/json',
           },
         });
-        setMessage("✅ Question updated successfully!");
-      setFeedback({ message: 'Question updated successfully!', success: true, open: true });
 
+        setFeedback({
+          message: 'Question updated successfully!',
+          success: true,
+          open: true,
+        });
       } else {
-        await axios.post(`${BASE_URL}/admin/content/createFaqs`, {
-          question,
-          options,
-        }, {
+        await axios.post(`${BASE_URL}/admin/content/createFaqs`, payload, {
           headers: {
             'x-access-token': token,
             'Content-Type': 'application/json',
           },
         });
-        setMessage("✅ Question created successfully!");
-      setFeedback({ message: 'Question created successfully!', success: true, open: true });
 
+        setFeedback({
+          message: 'Question created successfully!',
+          success: true,
+          open: true,
+        });
       }
-      resetForm();
-      setShowForm(false); // Close modal
-      fetchFaqs();
 
+      closeDialog();
+      fetchFaqs();
     } catch (error) {
-      console.error("Error saving question:", error);
-      setMessage("❌ An error occurred.");
+      console.error('Error saving question:', error);
       setFeedback({
-        message: err?.response?.data?.message || 'Failed to create question',
+        message: error?.response?.data?.message || 'Failed to save question',
         success: false,
         open: true,
       });
+    } finally {
+      setSubmitting(false);
     }
   };
 
-  const handleEdit = (faq) => {
-    setQuestion(faq.question);
-    setOptions(faq.Option.map(opt => ({ text: opt.text, isCorrect: opt.isCorrect })));
-    setEditId(faq.id);
-    setShowForm(true);
-  };
-
   const handleDelete = async (id) => {
-    if (!confirm("Are you sure you want to delete this question?")) return;
+    if (!confirm('Are you sure you want to delete this question?')) return;
+
     try {
       await axios.delete(`${BASE_URL}/admin/content/deleteFaqs/${id}`, {
         headers: { 'x-access-token': token },
       });
-      setMessage("Question deleted.");
+
       fetchFaqs();
-      setFeedback({ message: 'Question deleted successfully!', success: true, open: true });
-    } catch (error) {
-      console.error("Failed to delete:", error);
-      setMessage("❌ Delete failed.");
       setFeedback({
-        message: err?.response?.data?.message || 'Failed to delete question',
+        message: 'Question deleted successfully!',
+        success: true,
+        open: true,
+      });
+    } catch (error) {
+      console.error('Failed to delete:', error);
+      setFeedback({
+        message: error?.response?.data?.message || 'Failed to delete question',
         success: false,
         open: true,
       });
     }
   };
 
+  const filteredFaqs = faqs.filter((faq) =>
+    faq.question?.toLowerCase().includes(searchTerm.toLowerCase())
+  );
+
+  const paginatedFaqs = filteredFaqs.slice(
+    page * rowsPerPage,
+    page * rowsPerPage + rowsPerPage
+  );
+
+  const handleChangePage = (_, newPage) => {
+    setPage(newPage);
+  };
+
+  const handleChangeRowsPerPage = (event) => {
+    setRowsPerPage(parseInt(event.target.value, 10));
+    setPage(0);
+  };
+
   return (
-    <div style={{ padding: 20, maxWidth: 900, margin: 'auto' }}>
-      <div style={{display: 'flex', justifyContent: 'space-between', alignItems: 'center'}}>
-        <h1>FAQ</h1>
-      <button
-        onClick={() => {
-          resetForm();
-          setShowForm(true);
+    <Box sx={{ p: { xs: 2, md: 3 }, maxWidth: 1000, mx: 'auto' }}>
+      <Paper
+        sx={{
+          p: { xs: 2, md: 3 },
+          borderRadius: 3,
+          border: '1px solid',
+          borderColor: isDark ? 'rgba(255,255,255,0.08)' : '#e5e7eb',
+          backgroundColor: isDark ? '#1e1e2f' : '#fff',
+          color: isDark ? '#fff' : '#111827',
+          boxShadow: isDark ? 'none' : '0 10px 30px rgba(0,0,0,0.06)',
         }}
-        className="addBtn"
       >
-        Add Question
-      </button>
-      </div>
-      
+        <Stack
+          direction={{ xs: 'column', sm: 'row' }}
+          justifyContent="space-between"
+          alignItems={{ xs: 'flex-start', sm: 'center' }}
+          spacing={2}
+          sx={{ mb: 3 }}
+        >
+          <Box>
+            <Typography variant="h5" sx={{ fontWeight: 700, mb: 0.5 }}>
+              FAQs
+            </Typography>
+            <Typography variant="body2" sx={{ color: isDark ? '#cbd5e1' : '#6b7280' }}>
+              Manage FAQ questions and answers.
+            </Typography>
+          </Box>
 
-      {loading ? (
-        <p>Loading FAQs...</p>
-      ) : (
-        <div>
-          {faqs.map((faq) => (
-            <div key={faq.id}  style={{ position: 'relative', marginBottom: 20, maxWidth: '900px', padding: 20, boxShadow: '0 2px 4px rgba(0,0,0,0.7)', borderRadius: 8, paddingBottom: 10 }}>
-             <div style={{fontSize:'18px'}}> <strong>Q:</strong> {faq.question} </div>
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-              <ul>
-                {faq.Option.map((opt) => (
-                  <li key={opt.id}>
-                    {opt.text} {opt.isCorrect && <strong>(✔ Correct)</strong>}
-                  </li>
-                ))}
-              </ul>
-              <div style={{ position: 'absolute', bottom: 10, right: 10, display: 'flex', gap: 10 }}>
-                <button onClick={() => handleEdit(faq)}
-                className="updateBtn"
-              > Edit</button>
-              <button onClick={() => handleDelete(faq.id)}
-                className="deleteBtn">
-                Delete
-              </button>
+          <Button
+            variant="contained"
+            startIcon={<AddIcon />}
+            onClick={openAddDialog}
+            sx={{
+              textTransform: 'none',
+              borderRadius: 2,
+              px: 2,
+              py: 1,
+              boxShadow: 'none',
+            }}
+          >
+            Add Question
+          </Button>
+        </Stack>
 
-              </div>
-              
-                
-              </div>
-            </div>
-          ))}
-        </div>
-      )}
+        <Box sx={{ mb: 2 }}>
+          <TextField
+            fullWidth
+            size="small"
+            placeholder="Search question..."
+            value={searchTerm}
+            onChange={(e) => {
+              setSearchTerm(e.target.value);
+              setPage(0);
+            }}
+            InputProps={{
+              startAdornment: (
+                <InputAdornment position="start">
+                  <SearchIcon sx={{ fontSize: 20, color: 'text.secondary' }} />
+                </InputAdornment>
+              ),
+            }}
+            sx={{
+              '& .MuiOutlinedInput-root': {
+                borderRadius: 2,
+                backgroundColor: isDark ? '#25253a' : '#fafafa',
+              },
+            }}
+          />
+        </Box>
 
-      
+        <TableContainer
+          sx={{
+            border: '1px solid',
+            borderColor: isDark ? 'rgba(255,255,255,0.08)' : '#e5e7eb',
+            borderRadius: 2,
+            overflow: 'hidden',
+          }}
+        >
+          <Table>
+            <TableHead>
+              <TableRow sx={{ backgroundColor: isDark ? '#25253a' : '#f8fafc' }}>
+                <TableCell sx={{ fontWeight: 700, width: 90 }}>S.No</TableCell>
+                <TableCell sx={{ fontWeight: 700 }}>Question</TableCell>
+                <TableCell sx={{ fontWeight: 700, width: 140 }}>Options</TableCell>
+                <TableCell sx={{ fontWeight: 700 }}>Correct Answer</TableCell>
+                <TableCell sx={{ fontWeight: 700 }} align="right">
+                  Actions
+                </TableCell>
+              </TableRow>
+            </TableHead>
 
-      {showForm && (
-        <div className="modal-backdrop">
-          <div className="modal" style={{ backgroundColor: backgroundColor, color: textColor }}>
-            <form onSubmit={handleCreateOrUpdate}>
-              <h3>{editId ? "Update Question" : "Add Question"}</h3>
+            <TableBody>
+              {paginatedFaqs.length > 0 ? (
+                paginatedFaqs.map((faq, index) => {
+                  const correctOption =
+                    faq.Option?.find((opt) => opt.isCorrect)?.text || '-';
 
-              <div>
-                <label className="mb-16">Question:</label><br />
-                <input
-                  type="text"
-                  value={question}
-                  onChange={(e) => setQuestion(e.target.value)}
-                  required
-                  style={{ width: "100%", padding: 8, marginBottom: 10 , borderRadius: 4, border: '#c5bdbdff', boxShadow: '0 2px 4px rgba(0, 0, 0, 0.4)' ,  outline: "none", padding: 12 }}
-                />
-              </div>
+                  return (
+                    <TableRow key={faq.id} hover>
+                      <TableCell>{page * rowsPerPage + index + 1}</TableCell>
+                      <TableCell>{faq.question}</TableCell>
+                      <TableCell>{faq.Option?.length || 0}</TableCell>
+                      <TableCell>{correctOption}</TableCell>
+                      <TableCell align="right">
+                        <IconButton
+                          onClick={() => openEditDialog(faq)}
+                          color="primary"
+                          size="small"
+                        >
+                          <EditIcon fontSize="small" />
+                        </IconButton>
+                        <IconButton
+                          onClick={() => handleDelete(faq.id)}
+                          color="error"
+                          size="small"
+                        >
+                          <DeleteIcon fontSize="small" />
+                        </IconButton>
+                      </TableCell>
+                    </TableRow>
+                  );
+                })
+              ) : (
+                <TableRow>
+                  <TableCell colSpan={5} align="center" sx={{ py: 5 }}>
+                    <Typography
+                      variant="body2"
+                      sx={{ color: isDark ? '#cbd5e1' : '#6b7280' }}
+                    >
+                      {loading ? 'Loading FAQs...' : 'No FAQs found.'}
+                    </Typography>
+                  </TableCell>
+                </TableRow>
+              )}
+            </TableBody>
+          </Table>
 
-              <h4>Options:</h4>
+          <TablePagination
+            component="div"
+            count={filteredFaqs.length}
+            page={page}
+            onPageChange={handleChangePage}
+            rowsPerPage={rowsPerPage}
+            onRowsPerPageChange={handleChangeRowsPerPage}
+            rowsPerPageOptions={[5, 10, 20, 50]}
+            sx={{
+              borderTop: '1px solid',
+              borderColor: isDark ? 'rgba(255,255,255,0.08)' : '#e5e7eb',
+              '& .MuiTablePagination-toolbar': {
+                px: 2,
+              },
+            }}
+          />
+        </TableContainer>
+      </Paper>
+
+      <Dialog open={dialogOpen} onClose={closeDialog} fullWidth maxWidth="sm">
+        <form onSubmit={handleCreateOrUpdate}>
+          <DialogTitle sx={{ fontWeight: 700 }}>
+            {editId ? 'Edit Question' : 'Add New Question'}
+          </DialogTitle>
+
+          <DialogContent>
+            <TextField
+              fullWidth
+              autoFocus
+              size="small"
+              label="Question"
+              margin="dense"
+              value={question}
+              onChange={(e) => {
+                setQuestion(e.target.value);
+                if (questionError) setQuestionError('');
+              }}
+              error={!!questionError}
+              helperText={questionError || ' '}
+            />
+
+            <Box sx={{ mt: 1 }}>
+              <Typography variant="subtitle2" sx={{ mb: 1, fontWeight: 600 }}>
+                Options
+              </Typography>
+
               {options.map((option, index) => (
-                <div key={index} style={{ marginBottom: 10 }}>
-                  <input
-                    type="text"
-                    placeholder={`Option ${index + 1}`}
-                    value={option.text}
-                    onChange={(e) =>
-                      handleOptionChange(index, "text", e.target.value)
-                    }
-                    required
-                    style={{ width: "60%", marginRight: 10 , borderRadius: 4, border: '#c5bdbdff', boxShadow: '0 2px 4px rgba(0, 0, 0, 0.4)' , outline: "none", padding: 10 }}
-                  />
-                  <label>
-                    <input
-                      type="checkbox"
-                      checked={option.isCorrect}
-                      onChange={() =>
-                        handleOptionChange(index, "isCorrect", !option.isCorrect)
+                <Box key={index} sx={{ mb: 1.5 }}>
+                  <Stack
+                    direction={{ xs: 'column', sm: 'row' }}
+                    spacing={1}
+                    alignItems={{ xs: 'stretch', sm: 'center' }}
+                  >
+                    <TextField
+                      fullWidth
+                      size="small"
+                      label={`Option ${index + 1}`}
+                      value={option.text}
+                      onChange={(e) => handleOptionTextChange(index, e.target.value)}
+                    />
+
+                    <FormControlLabel
+                      control={
+                        <Checkbox
+                          checked={option.isCorrect}
+                          onChange={() => handleCorrectChange(index)}
+                        />
                       }
-                    />{" "}
-                    Correct
-                  </label>
-                  {options.length > 1 && (
-                    <button type="button" style={{marginLeft:5}} onClick={() => removeOption(index)}>
-                      x  
-                    </button>
-                  )}
-                </div>
+                      label="Correct"
+                      sx={{ minWidth: 100, m: 0 }}
+                    />
+
+                    {options.length > 2 && (
+                      <IconButton
+                        color="error"
+                        onClick={() => removeOption(index)}
+                        size="small"
+                      >
+                        <RemoveCircleOutlineIcon />
+                      </IconButton>
+                    )}
+                  </Stack>
+                </Box>
               ))}
 
-              <button type="button" onClick={addOption}
-              style={{
-                backgroundColor: '#44d7f1ff',
-                color: 'white',
-                padding: '8px 16px',
-                border: 'none',
-                borderRadius: '4px',
-                cursor: 'pointer',
-              }}>
-                Add Option
-              </button>
+              {optionsError && (
+                <Typography variant="caption" color="error" sx={{ display: 'block', mb: 1 }}>
+                  {optionsError}
+                </Typography>
+              )}
 
-              <br /><br />
-              <button type="submit"
-                style={{
-                  marginRight: 10,
-                  backgroundColor: editId ? '#268fe6' : 'green',
-                  color: 'white',
-                  padding: '8px 16px',
-                  border: 'none',
-                  borderRadius: '4px',
-                  cursor: 'pointer',
-                  boxShadow: '0 2px 4px rgba(0, 0, 0, 0.3)',
-                  transition: 'background-color 0.2s ease',
-                }}
-                onMouseOver={(e) => {
-                  e.target.style.backgroundColor = editId ? '#0981b9ff' : '#006400';
-                }}
-                onMouseOut={(e) => {
-                  e.target.style.backgroundColor = editId ? '#268fe6' : 'green';
-                }}
-              >{editId ? " Update" : " Create"}</button>
-              <button type="button" onClick={() => setShowForm(false)} style={{
-                marginLeft: 10,
-                backgroundColor: 'red',
-                color: 'white',
-                padding: '8px 16px',
-                border: 'none',
-                borderRadius: '4px',
-                cursor: 'pointer'
-              }}
-                onMouseOver={(e) => {
-                  e.target.style.backgroundColor = '#d91717';
-                }}
-                onMouseOut={(e) => {
-                  e.target.style.backgroundColor = 'red';
-                }}>
-                Cancel
-              </button>
-            </form>
-          </div>
-        </div>
-      )}
+              <Button
+                type="button"
+                variant="outlined"
+                onClick={addOption}
+                sx={{ textTransform: 'none', mt: 1 }}
+              >
+                Add Option
+              </Button>
+            </Box>
+
+            <Divider sx={{ my: 2 }} />
+
+            <Typography variant="caption" sx={{ color: 'text.secondary' }}>
+              Select only one correct option.
+            </Typography>
+          </DialogContent>
+
+          <DialogActions sx={{ px: 3, pb: 2 }}>
+            <Button
+              onClick={closeDialog}
+              color="inherit"
+              disabled={submitting}
+              sx={{ textTransform: 'none' }}
+            >
+              Cancel
+            </Button>
+            <Button
+              type="submit"
+              variant="contained"
+              disabled={submitting}
+              sx={{ textTransform: 'none', boxShadow: 'none' }}
+            >
+              {submitting
+                ? editId
+                  ? 'Saving...'
+                  : 'Creating...'
+                : editId
+                ? 'Save Changes'
+                : 'Create Question'}
+            </Button>
+          </DialogActions>
+        </form>
+      </Dialog>
 
       <Snackbar
         open={feedback.open}
@@ -307,38 +610,15 @@ const FAQ = () => {
         onClose={() => setFeedback({ ...feedback, open: false })}
         anchorOrigin={{ vertical: 'top', horizontal: 'center' }}
       >
-        <Alert severity={feedback.success ? 'success' : 'error'}>
+        <Alert
+          onClose={() => setFeedback({ ...feedback, open: false })}
+          severity={feedback.success ? 'success' : 'error'}
+          variant="filled"
+        >
           {feedback.message}
         </Alert>
       </Snackbar>
-
-      {/* {message && <p style={{ marginTop: 20 }}>{message}</p>} */}
-
-      {/* Modal Styles */}
-      <style jsx>{`
-        .modal-backdrop {
-          position: fixed;
-          top: 0;
-          left: 0;
-          right: 0;
-          bottom: 0;
-          background: rgba(0,0,0,0.5);
-          display: flex;
-          justify-content: center;
-          align-items: center;
-          z-index: 999;
-        }
-
-        .modal {
-          background: white;
-          padding: 30px;
-          border-radius: 8px;
-          max-width: 600px;
-          width: 100%;
-          box-shadow: 0 0 10px rgba(0,0,0,0.3);
-        }
-      `}</style>
-    </div>
+    </Box>
   );
 };
 

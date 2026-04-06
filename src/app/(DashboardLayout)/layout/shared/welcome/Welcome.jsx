@@ -15,7 +15,6 @@ const Welcome = () => {
     setOpen(false);
   };
   React.useEffect(() => {
-    // Update the document title using the browser API
     const timer = setTimeout(() => {
       handleClick();
     }, 1500);
@@ -37,8 +36,7 @@ const Welcome = () => {
           variant="filled"
           sx={{ width: '100%', color: 'white' }}
         >
-          <AlertTitle>Welcome To Modernize</AlertTitle>
-          Easy to customize the Template!!!
+          <AlertTitle>Welcome To Ollie Dashboard</AlertTitle>
         </Alert>
       </Snackbar>
     </React.Fragment>
